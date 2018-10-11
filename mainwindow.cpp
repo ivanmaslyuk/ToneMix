@@ -21,11 +21,16 @@ MainWindow::MainWindow(QWidget *parent) :
     HarmonicPlaylistGenerator generator;
     QList<Track> sorted = generator.harmonicSort(tracks, true);
     //выводим
-    QListWidget *lw = new QListWidget(this);
-    foreach(Track track, sorted) {
-        lw->addItem(track.keyAsString() + "\t" + track.bpmAsString() + "\t" + track.artist + "\t" + track.title);
+    QListWidget *l1 = new QListWidget(this);
+    foreach (Track track, tracks) {
+        l1->addItem(track.keyAsString() + "\t" + track.bpmAsString() + "\t" + track.artist + "\t\t\t" + track.title);
     }
-    setCentralWidget(lw);
+    ui->horizontalLayout->addWidget(l1);
+    QListWidget *l2 = new QListWidget(this);
+    foreach(Track track, sorted) {
+        l2->addItem(track.keyAsString() + "\t" + track.bpmAsString() + "\t" + track.artist + "\t\t\t" + track.title);
+    }
+    ui->horizontalLayout->addWidget(l2);
 }
 
 MainWindow::~MainWindow()
