@@ -1,5 +1,7 @@
 #include "harmonicplaylistgenerator.h"
 #include <QList>
+#include <QRandomGenerator>
+#include <QTime>
 
 //https://github.com/NRec22/harmonic-mixing-generator/blob/master/generator.js
 HarmonicPlaylistGenerator::HarmonicPlaylistGenerator()
@@ -135,7 +137,7 @@ QList<Track> &HarmonicPlaylistGenerator::listCompatible(QList<Track> &playlist, 
 Given a playlist, this method sorts the playlist prioritizing harmonic transitions first.
 Works in a first come, first serve basis.
 */
-QList<Track> &HarmonicPlaylistGenerator::harmonicSort(QList<Track> playlist)
+QList<Track> &HarmonicPlaylistGenerator::harmonicSort(QList<Track> playlist, bool random)
 {
     // equivalent of:
     //  var sortedPlaylist = [playlist.shift()];
@@ -146,7 +148,13 @@ QList<Track> &HarmonicPlaylistGenerator::harmonicSort(QList<Track> playlist)
     QList<Track> *unsort = new QList<Track>(playlist);
 
     QList<Track> *sortedPlaylist = new QList<Track>();
-    sortedPlaylist->append(unsort->takeFirst());
+    /*if (random) {
+        QRandomGenerator generator(QTime::currentTime().msec());
+        generator.bounded(0, unsort->size() - 1);
+        int seed = generator.generate();
+        sortedPlaylist->append(unsort->takeAt(seed));
+    }
+    else */sortedPlaylist->append(unsort->takeFirst());
 
     return harmonicSortHelper(*sortedPlaylist, *unsort);
 }

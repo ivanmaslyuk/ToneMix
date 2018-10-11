@@ -9,7 +9,7 @@ class HarmonicPlaylistGenerator
 public:
     HarmonicPlaylistGenerator();
     QList<Track> &listCompatible(QList<Track> &, int, char);
-    QList<Track> &harmonicSort(QList<Track> );
+    QList<Track> &harmonicSort(QList<Track>, bool);
     void storeTrack(QList<Track> &, QString, int, char);
 
 private:

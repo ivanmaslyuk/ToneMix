@@ -6,12 +6,14 @@
 class Track
 {
 public:
-    Track(QString, int, char, int, QString);
+    Track(QString, QString, int, char, int, QString);
     Track();
-    QString keyAsString();
+    QString keyAsString(); // тональность
+    QString bpmAsString(); // ударов в минуту
 
-    QString title;
-    QString path;
+    QString title; // наазвание
+    QString artist; // исполнитель
+    QString path; // путь к файлу
     int num;
     char key;
     int bpm;

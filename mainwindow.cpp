@@ -5,6 +5,8 @@
 #include "harmonicplaylistgenerator.h"
 #include <QFileDialog>
 
+#include <QListWidget>
+
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -12,13 +14,18 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
 
     QDir directory = QFileDialog::getExistingDirectory(this, tr("select directo"));
-    TagReader reader(directory.path(), directory.entryList(QStringList() << "*.mp3" << "*.MP3", QDir::Files));
-
+    // читаем файлы
+    TagReader reader(directory.path(), directory.entryList(QStringList() << "*.mp3" << "*.MP3", QDir::Files)); // конструктор TagReader нужно переделать, чтобы он принимал полные пути
     QList<Track> tracks = reader.read();
+    // сортируем
     HarmonicPlaylistGenerator generator;
-    QList<Track> sorted = generator.harmonicSort(tracks);
-    int s = sorted.size();
-    int i = 0;
+    QList<Track> sorted = generator.harmonicSort(tracks, true);
+    //выводим
+    QListWidget *lw = new QListWidget(this);
+    foreach(Track track, sorted) {
+        lw->addItem(track.keyAsString() + "\t" + track.bpmAsString() + "\t" + track.artist + "\t" + track.title);
+    }
+    setCentralWidget(lw);
 }
 
 MainWindow::~MainWindow()

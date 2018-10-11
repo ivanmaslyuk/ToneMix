@@ -20,6 +20,7 @@ QList<Track> &TagReader::read()
     QList<Track> *list = new QList<Track>();
 
     for (int i = 0; i < files.size(); i++) {
+        // TODO: удрать это хрень отсюда!!!!!!!!!
         list->append( readFile(dir + "/" + files[i]) );
     }
 
@@ -35,7 +36,7 @@ Track &TagReader::readFile(QString path)
     TagLib::ID3v2::FrameList TKEY = tag->frameList("TKEY");
     TagLib::ID3v2::FrameList TBPM = tag->frameList("TBPM");
 
-    QString title = asQString(tag->artist()) + " - " + asQString(tag->title());
+    //QString title = asQString(tag->artist()) + " - " + asQString(tag->title());
     QString key_str;
     int bpm;
 
@@ -44,16 +45,44 @@ Track &TagReader::readFile(QString path)
         bpm = asQString( TBPM.front()->toString() ).toInt();
     }
 
-    return fillTrack(title, key_str, bpm, path);
+//    if (!TKEY.isEmpty() && !TBPM.isEmpty()) {
+//        return fillTrack(
+//                    asQString(tag->artist()),
+//                    asQString(tag->title()),
+//                    asQString(TKEY.front()->toString()),
+//                    asQString(TBPM.front()->toString()).toInt(),
+//                    path
+//                    );
+//    }
+//    else {
+//        return fillTrack(
+//                    asQString(tag->artist()),
+//                    asQString(tag->title()),
+//                    asQString(TKEY.front()->toString()),
+//                    asQString(TBPM.front()->toString()).toInt(),
+//                    path
+//                    );
+//    }
+
+    return fillTrack(
+                    asQString(tag->artist()),
+                    asQString(tag->title()),
+                    key_str,
+                    bpm,
+                    path
+                    );
+
+//    return fillTrack(title, key_str, bpm, path);
+
 }
 
-Track &TagReader::fillTrack(QString title, QString key_str, int bpm, QString path)
+Track &TagReader::fillTrack(QString artist, QString title, QString key_str, int bpm, QString path)
 {
     int num;
     char key;
     QTextStream stream(&key_str);
     stream >> num >> key;
-    Track *track = new Track(title, num, key, bpm, path);
+    Track *track = new Track(artist, title, num, key, bpm, path);
     return *track;
 }
 

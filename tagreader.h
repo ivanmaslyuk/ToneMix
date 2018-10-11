@@ -12,7 +12,7 @@ public:
     QList<Track> &read();
 private:
     Track &readFile(QString path);
-    Track &fillTrack(QString title, QString key_str, int bpm, QString path);
+    Track &fillTrack(QString artist, QString title, QString key_str, int bpm, QString path);
 
     QStringList files;
     QString dir;
