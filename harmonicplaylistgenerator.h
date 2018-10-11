@@ -8,8 +8,8 @@ class HarmonicPlaylistGenerator
 {
 public:
     HarmonicPlaylistGenerator();
-    QList<Track> &listCompatible(QList<Track> &, int, char);
-    QList<Track> &harmonicSort(QList<Track>, bool);
+    QList<Track> &listCompatible(QList<Track>);
+    QList<Track> &harmonicSort(QList<Track>);
     void storeTrack(QList<Track> &, QString, int, char);
 
 private:

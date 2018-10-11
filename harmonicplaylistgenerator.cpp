@@ -37,7 +37,7 @@ bool HarmonicPlaylistGenerator::adjacentNum(int num1, int num2)
     else
         return false;
 }
-
+/*
 //4A -> 6A or 4A -> 11A
 bool HarmonicPlaylistGenerator::energyNum(int num1, int num2)
 {
@@ -96,7 +96,7 @@ bool HarmonicPlaylistGenerator::diagMix2(int num1, char key1, int num2, char key
     else{
         return false;
     }
-}
+}*/
 
 //given two songs, returns whether they can be harmonically mixed
 bool HarmonicPlaylistGenerator::checkCompatible(int num1, char key1, int num2, char key2)
@@ -122,12 +122,15 @@ bool HarmonicPlaylistGenerator::checkCompatible(int num1, char key1, int num2, c
 }
 
 //Given a playlist, this method creates a new playlist with matching or compatible songs based on a given key.
-QList<Track> &HarmonicPlaylistGenerator::listCompatible(QList<Track> &playlist, int num, char key)
+//Создает новый плейлист, в котором все песни совместимы с первой в списке.
+QList<Track> &HarmonicPlaylistGenerator::listCompatible(QList<Track> playlist)
 {
-    QList<Track> *newList;
+    //QList<Track> given(playlist);
+    QList<Track> *newList = new QList<Track>();
+    newList->append(playlist.takeFirst());
 
     for (int i = 0; i < playlist.size(); i++)
-        if (checkCompatible(num, key, playlist[i].num, playlist[i].key))
+        if (checkCompatible(newList->at(0).num, newList->at(0).key, playlist[i].num, playlist[i].key))
             newList->append(playlist[i]);
 
     return *newList;
@@ -137,7 +140,7 @@ QList<Track> &HarmonicPlaylistGenerator::listCompatible(QList<Track> &playlist, 
 Given a playlist, this method sorts the playlist prioritizing harmonic transitions first.
 Works in a first come, first serve basis.
 */
-QList<Track> &HarmonicPlaylistGenerator::harmonicSort(QList<Track> playlist, bool random)
+QList<Track> &HarmonicPlaylistGenerator::harmonicSort(QList<Track> playlist)
 {
     // equivalent of:
     //  var sortedPlaylist = [playlist.shift()];
@@ -159,20 +162,25 @@ QList<Track> &HarmonicPlaylistGenerator::harmonicSort(QList<Track> playlist, boo
     return harmonicSortHelper(*sortedPlaylist, *unsort);
 }
 
+QList<Track> &harmonicSortRandom(QList<Track> playlist)
+{
+    QList<Track> *result;
+    return *result;
+}
+
 QList<Track> &HarmonicPlaylistGenerator::harmonicSortHelper(QList<Track> &sortlist, QList<Track> &unsortlist)
 {
+    // можно написать функцию которая будет находить наиболее подходящую песню для данной песни, чтобы было меньше отсеенных треков
+    // одним из критериев оценивания будет то, сколько песен после себя она может поставить
+    // главный критерий -- если есть песня с такой же тональностью, ставим ее.
     for(int i = 0; i < unsortlist.size(); i++) {
         if (checkCompatible(sortlist[sortlist.size() - 1].num, sortlist[sortlist.size() - 1].key, unsortlist[i].num, unsortlist[i].key)) {
-            sortlist.append(unsortlist[i]);
-            //equivalent of:
-            //  unsortlist.splice(i, 1);
-            unsortlist.removeAt(i);
+            sortlist.append(unsortlist.takeAt(i));
             harmonicSortHelper(sortlist, unsortlist);
         }
         else if (i == unsortlist.size() - 1) {
-            //equivalent of:
-            //  sortlist.push(unsortlist.shift());
-            sortlist.append(unsortlist.takeFirst());
+            //sortlist.append(unsortlist.takeFirst()); // добавляет не поддающиеся сортировке песни в конец списка
+            unsortlist.removeFirst(); // удаляет не поддающиеся сортировке песни из плейлиста
             harmonicSortHelper(sortlist, unsortlist);
         }
     }
