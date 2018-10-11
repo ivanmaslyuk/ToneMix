@@ -164,6 +164,9 @@ QList<Track> &HarmonicPlaylistGenerator::harmonicSort(QList<Track> playlist)
 
 QList<Track> &harmonicSortRandom(QList<Track> playlist)
 {
+    // с помощью функции listCompatible получаем совместимые треки и берем рандомный
+
+    // СДЕЛАТЬ CONTROLLER для окна с функцией setFirstTrack и тд и тп
     QList<Track> *result;
     return *result;
 }
