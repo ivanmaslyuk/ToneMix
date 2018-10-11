@@ -167,8 +167,25 @@ QList<Track> &harmonicSortRandom(QList<Track> playlist)
     // с помощью функции listCompatible получаем совместимые треки и берем рандомный
 
     // СДЕЛАТЬ CONTROLLER для окна с функцией setFirstTrack, cancel, addTrack, setPlaylistSize, сигналом generated и тд и тп
-    QList<Track> *result;
+    QList<Track> *result = new QList<Track>();
+
     return *result;
+}
+
+QList<Track> &harmonicSortRandomHelper(QList<Track> &sortlist, QList<Track> &unsortlist)
+{
+    for(int i = 0; i < unsortlist.size(); i++) {
+        if (checkCompatible(sortlist[sortlist.size() - 1].num, sortlist[sortlist.size() - 1].key, unsortlist[i].num, unsortlist[i].key)) {
+            sortlist.append(unsortlist.takeAt(i));
+            harmonicSortHelper(sortlist, unsortlist);
+        }
+        else if (i == unsortlist.size() - 1) {
+            //sortlist.append(unsortlist.takeFirst()); // добавляет не поддающиеся сортировке песни в конец списка
+            unsortlist.removeFirst(); // удаляет не поддающиеся сортировке песни из плейлиста
+            harmonicSortHelper(sortlist, unsortlist);
+        }
+    }
+    return sortlist;
 }
 
 QList<Track> &HarmonicPlaylistGenerator::harmonicSortHelper(QList<Track> &sortlist, QList<Track> &unsortlist)
