@@ -9,7 +9,11 @@ class HarmonicPlaylistGenerator
 public:
     HarmonicPlaylistGenerator();
     QList<Track> &listCompatible(QList<Track>);
+    QList<Track> &listCompatible(QList<Track>, Track);
+    Track getRandomCompatible(QList<Track> &playlist, Track track);
+
     QList<Track> &harmonicSort(QList<Track>);
+    QList<Track> &harmonicSortRandom(QList<Track>);
     void storeTrack(QList<Track> &, QString, int, char);
 
 private:
@@ -21,6 +25,7 @@ private:
     bool diagMix2(int, char, int, char);
     bool checkCompatible(int, char, int, char);
     QList<Track> &harmonicSortHelper(QList<Track> &, QList<Track> &);
+    QList<Track> &harmonicSortRandomHelper(QList<Track> &, QList<Track> &);
 
     //Track shiftArray(QVector<Track> &);
 
