@@ -7,29 +7,19 @@
 class HarmonicPlaylistGenerator
 {
 public:
-    HarmonicPlaylistGenerator();
-    QList<Track> &listCompatible(QList<Track>);
-    QList<Track> &listCompatible(QList<Track>, Track);
-    Track getRandomCompatible(QList<Track> &playlist, Track track);
-
-    QList<Track> &harmonicSort(QList<Track>);
-    QList<Track> &harmonicSortRandom(QList<Track>);
-    void storeTrack(QList<Track> &, QString, int, char);
+    static QList<Track> &harmonicSort(QList<Track>, bool random = false);
 
 private:
-    bool matchKey(char, char);
-    bool sameNum(int, int);
-    bool adjacentNum(int, int);
-    bool energyNum(int, int);
-    bool diagMix(int, char, int, char);
-    bool diagMix2(int, char, int, char);
-    bool checkCompatible(int, char, int, char);
-    QList<Track> &harmonicSortHelper(QList<Track> &, QList<Track> &);
-    QList<Track> &harmonicSortRandomHelper(QList<Track> &, QList<Track> &);
+    // не разрешается создавать объекты этого класса
+    HarmonicPlaylistGenerator();
 
-    //Track shiftArray(QVector<Track> &);
-
-    //QVector<Track> playlist;
+    static bool matchKey(char, char);
+    static bool sameNum(int, int);
+    static bool adjacentNum(int, int);
+    static bool checkCompatible(int, char, int, char);
+    static QList<Track> &harmonicSortHelper(QList<Track> &, QList<Track> &);
+    static QList<Track> &harmonicSortRandomHelper(QList<Track> &, QList<Track> &);
+    static Track takeRandomCompatible(QList<Track> &playlist, Track track);
 };
 
 #endif // HARMONICPLAYLISTGENERATOR_H
