@@ -55,6 +55,9 @@ void MainController::setWorkingDirectory(QString path)
     allFiles = tagReader.read();
 
     emit finishedScanningFiles();
+
+    if (allFiles.size() > 0)
+        emit canGenerateChanged();
 }
 
 void MainController::addSingleTrack(QString path)
@@ -68,6 +71,9 @@ void MainController::addSingleTrack(QString path)
     // тут возможено косяки
     currentPlaylist.append(*(file[0]));
     emit generated(currentPlaylist);
+
+    if (allFiles.size() > 0)
+        emit canGenerateChanged();
 }
 
 bool MainController::canGenerate()
