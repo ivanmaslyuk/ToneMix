@@ -17,6 +17,8 @@ public:
     int num;
     char key;
     int bpm;
+    bool repeatedInPlaylist = false;
+    bool excluded = false;
 };
 
 #endif // TRACK_H

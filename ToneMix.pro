@@ -28,13 +28,16 @@ SOURCES += \
         mainwindow.cpp \
     harmonicplaylistgenerator.cpp \
     track.cpp \
-    tagreader.cpp
+    tagreader.cpp \
+    maincontroller.cpp
 
 HEADERS += \
         mainwindow.h \
     harmonicplaylistgenerator.h \
     track.h \
-    tagreader.h
+    tagreader.h \
+    maincontroller.h \
+    emptyplaylistexception.h
 
 FORMS += \
         mainwindow.ui

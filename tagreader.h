@@ -8,14 +8,14 @@
 class TagReader
 {
 public:
-    TagReader(QString, QStringList);
-    QList<Track> &read();
+    TagReader(QStringList);
+    QList<Track*> &read();
+    Track *readFile(QString path);
 private:
-    Track &readFile(QString path);
-    Track &fillTrack(QString artist, QString title, QString key_str, int bpm, QString path);
+
+    Track *fillTrack(QString artist, QString title, QString key_str, int bpm, QString path);
 
     QStringList files;
-    QString dir;
     QString asQString(TagLib::String);
 };
 

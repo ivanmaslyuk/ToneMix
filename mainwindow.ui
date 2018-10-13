@@ -16,12 +16,19 @@
   <widget class="QWidget" name="centralWidget">
    <layout class="QVBoxLayout" name="verticalLayout">
     <item>
-     <layout class="QHBoxLayout" name="horizontalLayout"/>
+     <widget class="QListView" name="listView"/>
     </item>
     <item>
      <widget class="QPushButton" name="pushButton">
       <property name="text">
        <string>PushButton</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QPushButton" name="pushButton_2">
+      <property name="text">
+       <string>отмена</string>
       </property>
      </widget>
     </item>
