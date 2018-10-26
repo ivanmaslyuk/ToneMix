@@ -7,6 +7,7 @@
 #include <track.h>
 #include "maincontroller.h"
 #include <QtWidgets>
+#include <QVariant>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -171,10 +172,15 @@ void MainWindow::getPlaylist(QList<Track> trackList)
     {
             //table->setCellWidget(i, 0, new QCheckBox(table));
 
+            /*QCheckBox *box = new QCheckBox;
+            box->objectName() == QString::number(i);
+            table->setItem(i, 0, new QTableWidgetItem(box));*/
 
             QTableWidgetItem *checkBox = new QTableWidgetItem;
             checkBox->setCheckState(Qt::CheckState(false));
+            //checkBox->row();
             table->setItem(i, 0, checkBox);
+
 
             if (trackList[i].title != "")
             {
@@ -210,6 +216,7 @@ void MainWindow::getPlaylist(QList<Track> trackList)
                 table->setItem(i, 3, tone);
             }
     }
+    QObject::connect(table, SIGNAL(itemClicked(QTableWidgetItem*)), this, SLOT(boxState(QTableWidgetItem*)));
 
 }
 
@@ -298,4 +305,11 @@ void MainWindow::checking(QList<Track> trackList)
 void MainWindow::cancelButton(bool active)
 {
     cancel->setEnabled(active);// ->setDisabled(active);
+}
+
+
+void MainWindow::boxState(QTableWidgetItem* item)
+{
+    bool newValue = item->checkState() == Qt::CheckState::Checked ? true : false;
+    controller->setIsTrackIncluded(item->row(), newValue);
 }

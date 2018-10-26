@@ -53,6 +53,7 @@ private slots:
     void dark();
     void checking(QList<Track> trackList);
     void cancelButton(bool);
+    void boxState(QTableWidgetItem*);
 
 protected:
     void contextMenuEvent(QContextMenuEvent *event);
