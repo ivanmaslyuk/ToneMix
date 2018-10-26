@@ -42,6 +42,8 @@ HEADERS += \
 FORMS += \
         mainwindow.ui
 
+RC_FILE = 1.rc
+
 #DEFINES+=MAKE_TAGLIB_LIB
 
 #DEPENDPATH += "C:/Libraries/taglib/bin"
@@ -65,3 +67,6 @@ win32: LIBS += $$PWD/../../../../Libraries/taglib/lib/libtag.dll.a
 
 INCLUDEPATH += $$PWD/../../../../Libraries/taglib/include/taglib
 DEPENDPATH += $$PWD/../../../../Libraries/taglib/include/taglib
+
+DISTFILES += \
+    .gitignore

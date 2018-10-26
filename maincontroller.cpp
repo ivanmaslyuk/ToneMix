@@ -2,8 +2,9 @@
 #include "harmonicplaylistgenerator.h"
 #include "tagreader.h"
 #include "emptyplaylistexception.h"
-
 #include <QStringList>
+//Установка первого трека
+//Отображение списка треков сразу при добавлении
 
 MainController::MainController(QObject *parent) : QObject(parent)
 {
@@ -14,6 +15,9 @@ void MainController::generate()
 {
     if (canGenerate()) {
         emit generationInProgress();
+
+        QList<Track> *copy = new QList<Track>(currentPlaylist);
+        generationHistory.append(copy);
 
         // составляем список неисключенных из генерации треков для их передачи генератору
         QList<Track> included;
@@ -28,8 +32,9 @@ void MainController::generate()
         while (currentPlaylist.size() > playlistSize)
             currentPlaylist.removeLast();
 
-        generationHistory.append(&currentPlaylist);
         emit generated(currentPlaylist);
+
+        if (generationHistory.size() > 1) emit canGoBackChanged(true);
     }
     else {
         // если файлы еще не были выбраны
@@ -40,7 +45,13 @@ void MainController::generate()
 
 void MainController::restorePrevious()
 {
-    currentPlaylist = *(generationHistory.takeLast());
+    if (generationHistory.size() > 0) {
+        //generationHistory.removeLast();
+        currentPlaylist = *(generationHistory.takeLast());
+        emit generated(currentPlaylist);
+        if (generationHistory.size() < 1) emit canGoBackChanged(false);
+    }
+    else qDebug() << "нет предыдущих версий. невозможно вернуться";
 }
 
 void MainController::setWorkingDirectory(QString path)
@@ -56,8 +67,14 @@ void MainController::setWorkingDirectory(QString path)
 
     emit finishedScanningFiles();
 
-    if (allFiles.size() > 0)
+    if (allFiles.size() > 0) {
         emit canGenerateChanged();
+        //QList<Track> _allFiles;
+        foreach (Track *tr, allFiles)
+            currentPlaylist.append(*tr);
+        emit generated(currentPlaylist);
+    }
+
 }
 
 void MainController::addSingleTrack(QString path)
@@ -97,4 +114,18 @@ void MainController::setIsTrackIncluded(int trackIndex, bool value)
             allFiles[i]->excluded = value;
             break;
         }
+}
+
+void MainController::setFirstTrack(int index)
+{
+    //allFiles.move(index, 0); return; // говнокод
+    qDebug() << "setting first track";
+    QString file = currentPlaylist[index].path;
+    qDebug() << file;
+    for (int i = 0; i < allFiles.size(); i++) {
+        if (allFiles[i]->path == file) {
+            allFiles.move(i, 0);
+            return;
+        }
+    }
 }

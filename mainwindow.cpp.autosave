@@ -171,11 +171,12 @@ void MainWindow::getPlaylist(QList<Track> trackList)
     {
             //table->setCellWidget(i, 0, new QCheckBox(table));
 
-
+    
             QTableWidgetItem *checkBox = new QTableWidgetItem;
             checkBox->setCheckState(Qt::CheckState(false));
+          
             table->setItem(i, 0, checkBox);
-
+            
             if (trackList[i].title != "")
             {
                 QTableWidgetItem *track = new QTableWidgetItem(trackList[i].title);
@@ -298,4 +299,10 @@ void MainWindow::checking(QList<Track> trackList)
 void MainWindow::cancelButton(bool active)
 {
     cancel->setEnabled(active);// ->setDisabled(active);
+}
+
+
+void MainWindow::boxState()
+{
+    
 }
