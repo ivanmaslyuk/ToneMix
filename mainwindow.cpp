@@ -25,11 +25,10 @@ MainWindow::MainWindow(QWidget *parent) :
 
     QPushButton *Browse = new QPushButton("Обзор...");
     QPushButton *Add = new QPushButton("Добавить");
-    QPushButton *generate = new QPushButton("Сгенерировать");
     QLabel *labelByTracks = new QLabel("Максимальное количество треков в плейлисте");
 
     cancel->setEnabled(false);
-
+    generate->setEnabled(false);
 
 //    colorWhite = new QRadioButton("Стандартная тема");
 //    colorDark = new QRadioButton("Тёмная тема");
@@ -52,6 +51,8 @@ MainWindow::MainWindow(QWidget *parent) :
         QObject::connect(generate, SIGNAL(clicked()), controller, SLOT(generate()));
         QObject::connect(controller, SIGNAL(generated(QList<Track>)), this, SLOT(getPlaylist(QList<Track>)));
         QObject::connect(countOfTrackInPlaylist, SIGNAL(valueChanged(int)), controller, SLOT(setPlaylistSize(int)));
+        QObject::connect(controller, SIGNAL(scanningFiles()), this, SLOT(scanning()));
+        QObject::connect(controller, SIGNAL(canGenerateChanged()), this, SLOT(canGenerateChanged()));
     }
 
     countOfTrackInPlaylist->setMaximum(1000);
@@ -150,13 +151,17 @@ void MainWindow::setFirstTrack()
 void MainWindow::browse()
 {
     QString dir = QFileDialog::getExistingDirectory(this, tr("Выбор папки"));
+    if (dir == "")
+        return;
     controller->setWorkingDirectory(dir);
 }
 
 
 void MainWindow::add()
 {
-    QString dir = QFileDialog::getOpenFileName(this, tr("Выбор файла"));
+    QString dir = QFileDialog::getOpenFileName(this, tr("Выбор файла"), "", tr("Tracks (*.mp3)"));
+    if (dir == "")
+        return;
     controller->addSingleTrack(dir);
 }
 
@@ -306,4 +311,16 @@ void MainWindow::boxState(QTableWidgetItem* item)
 {
     bool newValue = item->checkState() == Qt::CheckState::Checked ? true : false;
     controller->setIsTrackIncluded(item->row(), newValue);
+}
+
+
+void MainWindow::scanning()
+{
+    statusBar()->showMessage("Подождите, идёт загрузка!");
+}
+
+
+void MainWindow::canGenerateChanged()
+{
+    generate->setEnabled(controller->canGenerate());
 }

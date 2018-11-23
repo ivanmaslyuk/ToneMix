@@ -22,6 +22,7 @@ public:
     MainController *controller = new MainController;
     QSpinBox *countOfTrackInPlaylist = new QSpinBox();
     QPushButton *cancel = new QPushButton("Назад");
+    QPushButton *generate = new QPushButton("Сгенерировать");
     ~MainWindow();
 
 private:
@@ -34,7 +35,6 @@ private:
     void settingTable();
     void createActions();
     void hotKeys();
-
 
     QShortcut *keyCtrlG;
     QShortcut *keyCtrlZ;
@@ -54,6 +54,8 @@ private slots:
     void checking(QList<Track> trackList);
     void cancelButton(bool);
     void boxState(QTableWidgetItem*);
+    void scanning();
+    void canGenerateChanged();
 
 protected:
     void contextMenuEvent(QContextMenuEvent *event);
