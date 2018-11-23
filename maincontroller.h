@@ -50,6 +50,8 @@ private:
     QList<Track*> allFiles;
     QDir workingDirectory;
     int playlistSize = 200;
+
+    void checkWhatTracksAreRepeated();
 };
 
 #endif // MAINCONTROLLER_H

@@ -24,3 +24,8 @@ QString Track::bpmAsString()
 {
     return QString::number(this->bpm);
 }
+
+bool operator==(Track t1, Track t2)
+{
+    return t1.path == t2.path;
+}

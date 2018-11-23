@@ -65,6 +65,8 @@ void MainController::setWorkingDirectory(QString path)
     TagReader tagReader = TagReader(filesInWorkingDirectory);
     allFiles = tagReader.read();
 
+    checkWhatTracksAreRepeated(); // проверяем, какие треки повторяются
+
     emit finishedScanningFiles();
 
     if (allFiles.size() > 0) {
@@ -87,6 +89,9 @@ void MainController::addSingleTrack(QString path)
 
     // тут возможено косяки
     currentPlaylist.append(*(file[0]));
+
+    checkWhatTracksAreRepeated(); // проверяем, какие треки повторяются
+
     emit generated(currentPlaylist);
 
     if (allFiles.size() > 0)
@@ -128,4 +133,22 @@ void MainController::setFirstTrack(int index)
             return;
         }
     }
+}
+
+void MainController::checkWhatTracksAreRepeated() {
+    QList<Track*> list(allFiles);
+
+    foreach(Track *track, allFiles) {
+        list.removeFirst();
+        foreach(Track* tr, list) {
+            if (*track == *tr) {
+                tr->repeatedInPlaylist = true;
+                track->repeatedInPlaylist = true;
+                qDebug() << "Трек" << track->path << "повторяется больше одного раза.";
+                //list->removeOne(tr);
+            }
+        }
+        //list->removeOne(track);
+    }
+    qDebug() << "Проверка на повторяющиуеся треки завершена.";
 }

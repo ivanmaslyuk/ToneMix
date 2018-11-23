@@ -19,6 +19,8 @@ public:
     int bpm;
     bool repeatedInPlaylist = false;
     bool excluded = false;
+
+    friend bool operator==(Track t1, Track t2);
 };
 
 #endif // TRACK_H
