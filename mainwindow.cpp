@@ -31,15 +31,15 @@ MainWindow::MainWindow(QWidget *parent) :
     cancel->setEnabled(false);
 
 
-    colorWhite = new QRadioButton("Стандартная тема");
-    colorDark = new QRadioButton("Тёмная тема");
-    QVBoxLayout *radio = new QVBoxLayout;
-    QObject::connect(colorDark, SIGNAL(clicked()), SLOT(dark()));
-    QObject::connect(colorWhite, SIGNAL(clicked()), SLOT(white()));
+//    colorWhite = new QRadioButton("Стандартная тема");
+//    colorDark = new QRadioButton("Тёмная тема");
+//    QVBoxLayout *radio = new QVBoxLayout;
+//    QObject::connect(colorDark, SIGNAL(clicked()), SLOT(dark()));
+//    QObject::connect(colorWhite, SIGNAL(clicked()), SLOT(white()));
 
-    colorWhite->setChecked(true);
-    radio->addWidget(colorWhite);
-    radio->addWidget(colorDark);
+//    colorWhite->setChecked(true);
+//    radio->addWidget(colorWhite);
+//    radio->addWidget(colorDark);
 
 
     //коннекты
@@ -73,10 +73,10 @@ MainWindow::MainWindow(QWidget *parent) :
     {
         vLayout->addLayout(topLayout);
         vLayout->addLayout(bottomLayout);
-        vLayout->addLayout(radio);
+        //vLayout->addLayout(radio);
         widget->setLayout(topLayout);
         widget->setLayout(vLayout);
-        widget->setLayout(radio);
+        //widget->setLayout(radio);
         setCentralWidget(widget);
     }
 }
@@ -170,15 +170,9 @@ void MainWindow::getPlaylist(QList<Track> trackList)
     //добавление элементов в таблицу
     for(int i = 0; i < trackList.size(); i++)
     {
-            //table->setCellWidget(i, 0, new QCheckBox(table));
-
-            /*QCheckBox *box = new QCheckBox;
-            box->objectName() == QString::number(i);
-            table->setItem(i, 0, new QTableWidgetItem(box));*/
 
             QTableWidgetItem *checkBox = new QTableWidgetItem;
             checkBox->setCheckState(Qt::CheckState(false));
-            //checkBox->row();
             table->setItem(i, 0, checkBox);
 
 
@@ -304,7 +298,7 @@ void MainWindow::checking(QList<Track> trackList)
 
 void MainWindow::cancelButton(bool active)
 {
-    cancel->setEnabled(active);// ->setDisabled(active);
+    cancel->setEnabled(active);
 }
 
 
