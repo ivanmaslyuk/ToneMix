@@ -49,16 +49,16 @@ bool HarmonicPlaylistGenerator::checkCompatible(int num1, char key1, int num2, c
  * @param track
  * @return
  */
-Track HarmonicPlaylistGenerator::takeRandomCompatible(QList<Track> &playlist, Track track)
+Track* HarmonicPlaylistGenerator::takeRandomCompatible(QList<Track*> &playlist, Track *track)
 {
-    QList<Track> compatible;
+    QList<Track*> compatible;
 
     for (int i = 0; i < playlist.size(); i++)
-        if (checkCompatible(track.num, track.key, playlist[i].num, playlist[i].key))
+        if (checkCompatible(track->num, track->key, playlist[i]->num, playlist[i]->key))
             compatible.append(playlist.takeAt(i));
 
     // Если нет совместимых треков, возвращаем пустой Track
-    if (compatible.size() == 0) return Track();
+    if (compatible.size() == 0) return nullptr;
 
     QRandomGenerator generator(QTime::currentTime().msec());
     int index = generator.bounded(0, compatible.size() - 1);
@@ -70,11 +70,11 @@ Track HarmonicPlaylistGenerator::takeRandomCompatible(QList<Track> &playlist, Tr
 Given a playlist, this method sorts the playlist prioritizing harmonic transitions first.
 Works in a first come, first serve basis.
 */
-QList<Track> &HarmonicPlaylistGenerator::harmonicSort(QList<Track> playlist, bool random)
+QList<Track*> &HarmonicPlaylistGenerator::harmonicSort(QList<Track*> playlist, bool random)
 {
-    QList<Track> *unsort = new QList<Track>(playlist);
+    QList<Track*> *unsort = new QList<Track*>(playlist);
 
-    QList<Track> *sortedPlaylist = new QList<Track>();
+    QList<Track*> *sortedPlaylist = new QList<Track*>();
     sortedPlaylist->append(unsort->takeFirst());
 
     if (random)
@@ -83,13 +83,13 @@ QList<Track> &HarmonicPlaylistGenerator::harmonicSort(QList<Track> playlist, boo
         return harmonicSortHelper(*sortedPlaylist, *unsort);
 }
 
-QList<Track> &HarmonicPlaylistGenerator::harmonicSortHelper(QList<Track> &sortlist, QList<Track> &unsortlist)
+QList<Track*> &HarmonicPlaylistGenerator::harmonicSortHelper(QList<Track*> &sortlist, QList<Track*> &unsortlist)
 {
     // можно написать функцию которая будет находить наиболее подходящую песню для данной песни, чтобы было меньше отсеенных треков
     // одним из критериев оценивания будет то, сколько песен после себя она может поставить
     // главный критерий -- если есть песня с такой же тональностью, ставим ее.
     for(int i = 0; i < unsortlist.size(); i++) {
-        if (checkCompatible(sortlist[sortlist.size() - 1].num, sortlist[sortlist.size() - 1].key, unsortlist[i].num, unsortlist[i].key)) {
+        if (checkCompatible(sortlist[sortlist.size() - 1]->num, sortlist[sortlist.size() - 1]->key, unsortlist[i]->num, unsortlist[i]->key)) {
             sortlist.append(unsortlist.takeAt(i));
             harmonicSortHelper(sortlist, unsortlist);
         }
@@ -102,16 +102,16 @@ QList<Track> &HarmonicPlaylistGenerator::harmonicSortHelper(QList<Track> &sortli
     return sortlist;
 }
 
-QList<Track> &HarmonicPlaylistGenerator::harmonicSortRandomHelper(QList<Track> &sortlist, QList<Track> &unsortlist)
+QList<Track*> &HarmonicPlaylistGenerator::harmonicSortRandomHelper(QList<Track*> &sortlist, QList<Track*> &unsortlist)
 {
     if (unsortlist.size() != 0) {
         // Берем последний трек в сортированном списке, чтобы подобрать к нему совместимый.
-        Track last = sortlist.last();
+        Track *last = sortlist.last();
 
         // Добавить случайный совместимый
-        Track randomCompatible = takeRandomCompatible(unsortlist, last);
+        Track *randomCompatible = takeRandomCompatible(unsortlist, last);
         // Если в полученном Track есть путь к файлу, то найти совместимый трек удалось.
-        if (randomCompatible.path != "") {
+        if (randomCompatible != nullptr) {
             sortlist.append(randomCompatible);
             harmonicSortRandomHelper(sortlist, unsortlist);
         }

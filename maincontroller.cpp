@@ -16,14 +16,13 @@ void MainController::generate()
     if (canGenerate()) {
         emit generationInProgress();
 
-        QList<Track> *copy = new QList<Track>(currentPlaylist);
-        generationHistory.append(copy);
+        generationHistory.append(QList<Track*>(currentPlaylist));
 
         // составляем список неисключенных из генерации треков для их передачи генератору
-        QList<Track> included;
+        QList<Track*> included;
         foreach (Track *track, allFiles) {
             if (!track->excluded)
-                included.append(*track);
+                included.append(track);
         }
 
         currentPlaylist = HarmonicPlaylistGenerator::harmonicSort(included, true);
@@ -32,9 +31,9 @@ void MainController::generate()
         while (currentPlaylist.size() > playlistSize)
             currentPlaylist.removeLast();
 
-        emit generated(currentPlaylist);
+        sendCurrentPlaylist();
 
-        if (generationHistory.size() > 1) emit canGoBackChanged(true);
+        if (generationHistory.size() > 0) emit canGoBackChanged(true);
     }
     else {
         // если файлы еще не были выбраны
@@ -46,10 +45,9 @@ void MainController::generate()
 void MainController::restorePrevious()
 {
     if (generationHistory.size() > 0) {
-        //generationHistory.removeLast();
-        currentPlaylist = *(generationHistory.takeLast());
-        emit generated(currentPlaylist);
-        if (generationHistory.size() < 1) emit canGoBackChanged(false);
+        currentPlaylist = generationHistory.takeLast();
+        sendCurrentPlaylist();
+        if (generationHistory.size() == 0) emit canGoBackChanged(false);
     }
     else qDebug() << "нет предыдущих версий. невозможно вернуться";
 }
@@ -65,34 +63,25 @@ void MainController::setWorkingDirectory(QString path)
     TagReader tagReader = TagReader(filesInWorkingDirectory);
     allFiles = tagReader.read();
 
-    checkWhatTracksAreRepeated(); // проверяем, какие треки повторяются
-
-    emit finishedScanningFiles();
-
     if (allFiles.size() > 0) {
         emit canGenerateChanged();
-        //QList<Track> _allFiles;
         foreach (Track *tr, allFiles)
-            currentPlaylist.append(*tr);
-        emit generated(currentPlaylist);
+            currentPlaylist.append(tr);
+        sendCurrentPlaylist();
     }
 
 }
 
 void MainController::addSingleTrack(QString path)
 {
-    emit scanningFiles();
     TagReader tagReader = TagReader(QStringList() << path);
     QList<Track*> file = tagReader.read();
     allFiles.append(file);
-    emit finishedScanningFiles();
 
     // тут возможено косяки
-    currentPlaylist.append(*(file[0]));
+    currentPlaylist.append(file[0]);
 
-    checkWhatTracksAreRepeated(); // проверяем, какие треки повторяются
-
-    emit generated(currentPlaylist);
+    sendCurrentPlaylist();
 
     if (allFiles.size() > 0)
         emit canGenerateChanged();
@@ -110,22 +99,13 @@ void MainController::setPlaylistSize(int size)
 
 void MainController::setIsTrackIncluded(int trackIndex, bool value)
 {
-    // моенять на указатель
-    //currentPlaylist[trackIndex].excluded = value;
-
-    QString trackPath = currentPlaylist[trackIndex].path;
-    for (int i = 0; i < allFiles.size(); i++)
-        if (allFiles[i]->path == trackPath) {
-            allFiles[i]->excluded = value;
-            break;
-        }
+    currentPlaylist[trackIndex]->excluded = !value;
 }
 
 void MainController::setFirstTrack(int index)
 {
-    //allFiles.move(index, 0); return; // говнокод
     qDebug() << "setting first track";
-    QString file = currentPlaylist[index].path;
+    QString file = currentPlaylist[index]->path;
     qDebug() << file;
     for (int i = 0; i < allFiles.size(); i++) {
         if (allFiles[i]->path == file) {
@@ -135,20 +115,34 @@ void MainController::setFirstTrack(int index)
     }
 }
 
-void MainController::checkWhatTracksAreRepeated() {
-    QList<Track*> list(allFiles);
+void MainController::checkRepeated() {
+    foreach (Track *t, allFiles) {
+        t->repeatedInPlaylist = false;
+    }
 
-    foreach(Track *track, allFiles) {
+    QList<Track*> list(currentPlaylist);
+
+    foreach(Track *track, currentPlaylist) {
         list.removeFirst();
         foreach(Track* tr, list) {
             if (*track == *tr) {
                 tr->repeatedInPlaylist = true;
                 track->repeatedInPlaylist = true;
                 qDebug() << "Трек" << track->path << "повторяется больше одного раза.";
-                //list->removeOne(tr);
             }
         }
-        //list->removeOne(track);
     }
     qDebug() << "Проверка на повторяющиуеся треки завершена.";
+}
+
+void MainController::sendCurrentPlaylist()
+{
+    checkRepeated(); // проверяем какие треки повторяются перед передачей
+
+    QList<Track> playlist;
+    foreach(Track *t, currentPlaylist) {
+        playlist.append(*t);
+    }
+
+    emit generated(playlist);
 }

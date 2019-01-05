@@ -180,6 +180,7 @@ void MainWindow::getPlaylist(QList<Track> trackList)
             checkBox->setCheckState(Qt::CheckState(false));
             table->setItem(i, 0, checkBox);
 
+            if (trackList[i].repeatedInPlaylist) trackList[i].bpm=6666; // ДЛЯ ТЕСТА ПОВТОРЕНИЙ
 
             if (trackList[i].title != "")
             {
