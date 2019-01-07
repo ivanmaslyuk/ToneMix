@@ -27,5 +27,6 @@ QString Track::bpmAsString()
 
 bool operator==(Track t1, Track t2)
 {
-    return t1.path == t2.path;
+    return t1.title == t2.title;
+//    return t1.path == t2.path;
 }

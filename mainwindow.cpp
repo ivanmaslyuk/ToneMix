@@ -180,7 +180,7 @@ void MainWindow::getPlaylist(QList<Track> trackList)
             checkBox->setCheckState(Qt::CheckState(false));
             table->setItem(i, 0, checkBox);
 
-            if (trackList[i].repeatedInPlaylist) trackList[i].bpm=6666; // ДЛЯ ТЕСТА ПОВТОРЕНИЙ
+//            if (trackList[i].repeatedInPlaylist) trackList[i].bpm=6666; // ДЛЯ ТЕСТА ПОВТОРЕНИЙ
 
             if (trackList[i].title != "")
             {
@@ -214,6 +214,13 @@ void MainWindow::getPlaylist(QList<Track> trackList)
             {
                 QTableWidgetItem *tone = new QTableWidgetItem(trackList[i].keyAsString());
                 table->setItem(i, 3, tone);
+            }
+
+            for (int j = 0; j < colomn(); j++) {
+                if (trackList[i].repeatedInPlaylist)
+                    table->item(i, j)->setBackground(Qt::red);
+//                else
+//                    table->item(i, j)->setBackground(Qt::green);
             }
     }
     QObject::connect(table, SIGNAL(itemClicked(QTableWidgetItem*)), this, SLOT(boxState(QTableWidgetItem*)));
