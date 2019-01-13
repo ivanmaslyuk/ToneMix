@@ -25,8 +25,17 @@ QString Track::bpmAsString()
     return QString::number(this->bpm);
 }
 
+QString Track::description()
+{
+    if (!this->title.isEmpty()) {
+        return this->title;
+    } else {
+        return this->path;
+    }
+}
+
 bool operator==(Track t1, Track t2)
 {
-    return t1.title == t2.title;
+    return t1.description() == t2.description();
 //    return t1.path == t2.path;
 }

@@ -128,7 +128,8 @@ void MainController::checkRepeated() {
             if (*track == *tr) {
                 tr->repeatedInPlaylist = true;
                 track->repeatedInPlaylist = true;
-                qDebug() << "Трек" << track->path << "повторяется больше одного раза.";
+                qDebug() << "Трек" << track->path << "повторяется больше одного раза. ";
+                qDebug() << tr->title << "|||||" << track->title;
             }
         }
     }

@@ -8,6 +8,8 @@
 #include "maincontroller.h"
 #include <QtWidgets>
 #include <QVariant>
+#include <QtCore>
+#include "nofocusproxystyle.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -80,6 +82,9 @@ MainWindow::MainWindow(QWidget *parent) :
         //widget->setLayout(radio);
         setCentralWidget(widget);
     }
+
+
+    table->setStyle(new NoFocusProxyStyle());
 }
 
 MainWindow::~MainWindow()
@@ -218,7 +223,7 @@ void MainWindow::getPlaylist(QList<Track> trackList)
 
             for (int j = 0; j < colomn(); j++) {
                 if (trackList[i].repeatedInPlaylist)
-                    table->item(i, j)->setBackground(Qt::red);
+                    table->item(i, j)->setBackground(QColor("#ffa7a7"));
 //                else
 //                    table->item(i, j)->setBackground(Qt::green);
             }

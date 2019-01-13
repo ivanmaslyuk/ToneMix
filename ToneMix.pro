@@ -37,7 +37,8 @@ HEADERS += \
     track.h \
     tagreader.h \
     maincontroller.h \
-    emptyplaylistexception.h
+    emptyplaylistexception.h \
+    nofocusproxystyle.h
 
 FORMS += \
         mainwindow.ui
