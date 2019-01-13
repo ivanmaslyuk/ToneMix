@@ -104,7 +104,7 @@ void MainWindow::settingTable()
     //устанавливаем названия колонок
     {
         QStringList lst;
-        lst << "" << "Track" << "Bmp" << "Tone";
+        lst << "" << "Трек" << "BPM" << "Тон";
         table->setHorizontalHeaderLabels(lst);
     }
 
