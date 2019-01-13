@@ -85,6 +85,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 
     table->setStyle(new NoFocusProxyStyle());
+    statusBar()->showMessage("Пусто. Выберите треки, нажав \"Обзор\" или \"Добавить\".");
 }
 
 MainWindow::~MainWindow()
