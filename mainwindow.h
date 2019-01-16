@@ -31,7 +31,7 @@ private:
     QListWidget *l2;
     QAction *addAct;
 
-    int colomn();
+    int column();
     void settingTable();
     void createActions();
     void hotKeys();

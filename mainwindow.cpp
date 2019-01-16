@@ -1,15 +1,16 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "tagreader.h"
-#include <QDir>
 #include "harmonicplaylistgenerator.h"
-#include <QFileDialog>
-#include <track.h>
 #include "maincontroller.h"
-#include <QtWidgets>
-#include <QVariant>
-#include <QtCore>
 #include "nofocusproxystyle.h"
+#include "track.h"
+#include <QtWidgets>
+//#include <QDir>
+//#include <QFileDialog>
+//#include <QVariant>
+//#include <QtCore>
+
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -29,62 +30,58 @@ MainWindow::MainWindow(QWidget *parent) :
     QPushButton *Add = new QPushButton("Добавить");
     QLabel *labelByTracks = new QLabel("Максимальное количество треков в плейлисте");
 
-    cancel->setEnabled(false);
-    generate->setEnabled(false);
-
 //    colorWhite = new QRadioButton("Стандартная тема");
 //    colorDark = new QRadioButton("Тёмная тема");
 //    QVBoxLayout *radio = new QVBoxLayout;
-//    QObject::connect(colorDark, SIGNAL(clicked()), SLOT(dark()));
-//    QObject::connect(colorWhite, SIGNAL(clicked()), SLOT(white()));
+//    connect(colorDark, SIGNAL(clicked()), SLOT(dark()));
+//    connect(colorWhite, SIGNAL(clicked()), SLOT(white()));
 
 //    colorWhite->setChecked(true);
 //    radio->addWidget(colorWhite);
 //    radio->addWidget(colorDark);
 
-
     //коннекты
-    {
-        QObject::connect(Browse, SIGNAL(clicked()), this, SLOT(browse()));
-        QObject::connect(Add, SIGNAL(clicked()), this, SLOT(add()));
-        QObject::connect(cancel, SIGNAL(clicked()), controller, SLOT(restorePrevious()));
-        QObject::connect(controller, SIGNAL(canGoBackChanged(bool)), this, SLOT(cancelButton(bool)));
-        QObject::connect(generate, SIGNAL(clicked()), SLOT(checking(QList<Track> trackList)));
-        QObject::connect(generate, SIGNAL(clicked()), controller, SLOT(generate()));
-        QObject::connect(controller, SIGNAL(generated(QList<Track>)), this, SLOT(getPlaylist(QList<Track>)));
-        QObject::connect(countOfTrackInPlaylist, SIGNAL(valueChanged(int)), controller, SLOT(setPlaylistSize(int)));
-        QObject::connect(controller, SIGNAL(scanningFiles()), this, SLOT(scanning()));
-        QObject::connect(controller, SIGNAL(canGenerateChanged()), this, SLOT(canGenerateChanged()));
-    }
-
-    countOfTrackInPlaylist->setMaximum(1000);
-    countOfTrackInPlaylist->setValue(1000);
+    connect(Browse, SIGNAL(clicked()), this, SLOT(browse()));
+    connect(Add, SIGNAL(clicked()), this, SLOT(add()));
+    connect(cancel, SIGNAL(clicked()), controller, SLOT(restorePrevious()));
+    connect(controller, SIGNAL(canGoBackChanged(bool)), this, SLOT(cancelButton(bool)));
+    connect(generate, SIGNAL(clicked()), SLOT(checking(QList<Track> trackList)));
+    connect(generate, SIGNAL(clicked()), controller, SLOT(generate()));
+    connect(controller, SIGNAL(generated(QList<Track>)), this, SLOT(getPlaylist(QList<Track>)));
+    connect(countOfTrackInPlaylist, SIGNAL(valueChanged(int)), controller, SLOT(setPlaylistSize(int)));
+    connect(controller, SIGNAL(scanningFiles()), this, SLOT(scanning()));
+    connect(controller, SIGNAL(canGenerateChanged()), this, SLOT(canGenerateChanged()));
 
 
     //добавление всех виджетов в верхний слой
-    {
-        topLayout->addWidget(Browse);
-        topLayout->addWidget(Add);
-        topLayout->addWidget(cancel);
-        topLayout->addWidget(generate);
-        topLayout->addWidget(labelByTracks);
-        topLayout->addWidget(countOfTrackInPlaylist);
-        bottomLayout->addWidget(table);
-    }
+    topLayout->addWidget(Browse);
+    topLayout->addWidget(Add);
+    topLayout->addWidget(cancel);
+    topLayout->addWidget(generate);
+    topLayout->addWidget(labelByTracks);
+    topLayout->addWidget(countOfTrackInPlaylist);
+    bottomLayout->addWidget(table);
 
     //объединяем слои и устанавливаем центральным виджетом
-    {
-        vLayout->addLayout(topLayout);
-        vLayout->addLayout(bottomLayout);
-        //vLayout->addLayout(radio);
-        widget->setLayout(topLayout);
-        widget->setLayout(vLayout);
-        //widget->setLayout(radio);
-        setCentralWidget(widget);
-    }
+    vLayout->addLayout(topLayout);
+    vLayout->addLayout(bottomLayout);
+    //vLayout->addLayout(radio);
+    widget->setLayout(topLayout);
+    widget->setLayout(vLayout);
+    //widget->setLayout(radio);
+    setCentralWidget(widget);
 
+    //настройка спинбокса
+    countOfTrackInPlaylist->setMaximum(1000);
+    countOfTrackInPlaylist->setValue(1000);
 
+    //делаем кнопки отмены и генерации неактивными
+    cancel->setEnabled(false);
+    generate->setEnabled(false);
+
+    //удаление пунктира у выбранных строк
     table->setStyle(new NoFocusProxyStyle());
+
     statusBar()->showMessage("Пусто. Выберите треки, нажав \"Обзор\" или \"Добавить\".");
 }
 
@@ -93,48 +90,37 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-
 void MainWindow::settingTable()
 {
     //устанавливаем размер нашей таблицы
-    {
-        table->setRowCount(0);
-        table->setColumnCount(colomn());
-    }
+    table->setRowCount(0);
+    table->setColumnCount(column());
 
     //устанавливаем названия колонок
-    {
-        QStringList lst;
-        lst << "" << "Трек" << "BPM" << "Тон";
-        table->setHorizontalHeaderLabels(lst);
-    }
+    table->setHorizontalHeaderLabels(QStringList() << "" << "Трек" << "BPM" << "Тон");
 
     //настраиваем столбцы
-    {
-        table->verticalHeader()->setVisible(false); //удаляем номера строк
-        table->verticalHeader()->setDefaultAlignment(Qt::AlignVCenter);
-        table->horizontalHeader()->setSectionResizeMode(1, QHeaderView::Stretch);
-        table->resizeColumnsToContents();
-        table->resizeRowsToContents();
-        table->setEditTriggers(QAbstractItemView::NoEditTriggers);
-        table->setShowGrid(false); //отрисовка таблицы
-        table->setSelectionBehavior(QAbstractItemView::SelectRows); //выбираем только строки
-    }
+    table->verticalHeader()->setVisible(false); //удаляем номера строк
+    table->verticalHeader()->setDefaultAlignment(Qt::AlignVCenter);
+    table->horizontalHeader()->setSectionResizeMode(1, QHeaderView::Stretch);
+    table->resizeColumnsToContents();
+    table->resizeRowsToContents();
+    table->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    table->setShowGrid(false); //отрисовка таблицы
+    table->setSelectionBehavior(QAbstractItemView::SelectRows); //выбираем только строки
 }
 
-int MainWindow::colomn()
+int MainWindow::column()
 {
     int m = 4;
     return m;
 }
 
-
 void MainWindow::createActions()
 {
     addAct = new QAction(tr("Назначить первым"), this);
-    QObject::connect(addAct, SIGNAL(triggered()), this, SLOT(setFirstTrack()));
+    connect(addAct, SIGNAL(triggered()), this, SLOT(setFirstTrack()));
 }
-
 
 void MainWindow::setFirstTrack()
 {
@@ -147,30 +133,27 @@ void MainWindow::setFirstTrack()
     if(choice == QMessageBox::Yes)
     {
         int rowOfSelectedItem = table->currentRow();
-        qDebug() << rowOfSelectedItem;
         controller->setFirstTrack(rowOfSelectedItem);
 
     }
 }
 
-
 void MainWindow::browse()
 {
     QString dir = QFileDialog::getExistingDirectory(this, tr("Выбор папки"));
-    if (dir == "")
+    if (dir.isEmpty())
         return;
     controller->setWorkingDirectory(dir);
 }
 
-
 void MainWindow::add()
 {
     QString dir = QFileDialog::getOpenFileName(this, tr("Выбор файла"), "", tr("Tracks (*.mp3)"));
-    if (dir == "")
+    if (dir.isEmpty())
         return;
+
     controller->addSingleTrack(dir);
 }
-
 
 void MainWindow::getPlaylist(QList<Track> trackList)
 {
@@ -179,60 +162,46 @@ void MainWindow::getPlaylist(QList<Track> trackList)
     statusBar()->showMessage("Количество песен в плейлисте: " + QString::number(trackList.size()));
 
     //добавление элементов в таблицу
-    for(int i = 0; i < trackList.size(); i++)
-    {
-
+    for(int i = 0; i < trackList.size(); i++) {
             QTableWidgetItem *checkBox = new QTableWidgetItem;
             checkBox->setCheckState(Qt::CheckState(false));
             table->setItem(i, 0, checkBox);
 
-//            if (trackList[i].repeatedInPlaylist) trackList[i].bpm=6666; // ДЛЯ ТЕСТА ПОВТОРЕНИЙ
-
-            if (trackList[i].title != "")
-            {
+            if (trackList[i].title != "") {
                 QTableWidgetItem *track = new QTableWidgetItem(trackList[i].title);
                 table->setItem(i, 1, track);
             }
-            else
-            {
+            else {
                 trackList[i].path = trackList[i].path.split("/").last();
                 QTableWidgetItem *track = new QTableWidgetItem(trackList[i].path);
                 table->setItem(i, 1, track);
             }
 
-            if(trackList[i].bpm == 0)
-            {
+            if(trackList[i].bpm == 0) {
                 QTableWidgetItem *bmp = new QTableWidgetItem(QString("?"));
                 table->setItem(i, 2, bmp);
             }
-            else
-            {
+            else {
                 QTableWidgetItem *bmp = new QTableWidgetItem(trackList[i].bpmAsString());
                 table->setItem(i, 2, bmp);
             }
 
-            if(trackList[i].keyAsString() == "" || trackList[i].num == 0)
-            {
+            if(trackList[i].keyAsString() == "" || trackList[i].num == 0) {
                 QTableWidgetItem *tone = new QTableWidgetItem(QString("?"));
                 table->setItem(i, 3, tone);
             }
-            else
-            {
+            else {
                 QTableWidgetItem *tone = new QTableWidgetItem(trackList[i].keyAsString());
                 table->setItem(i, 3, tone);
             }
 
-            for (int j = 0; j < colomn(); j++) {
+            for (int j = 0; j < column(); j++) {
                 if (trackList[i].repeatedInPlaylist)
                     table->item(i, j)->setBackground(QColor("#ffa7a7"));
-//                else
-//                    table->item(i, j)->setBackground(Qt::green);
             }
     }
-    QObject::connect(table, SIGNAL(itemClicked(QTableWidgetItem*)), this, SLOT(boxState(QTableWidgetItem*)));
-
+    connect(table, SIGNAL(itemClicked(QTableWidgetItem*)), this, SLOT(boxState(QTableWidgetItem*)));
 }
-
 
 void MainWindow::contextMenuEvent(QContextMenuEvent *event)
 {
@@ -241,30 +210,28 @@ void MainWindow::contextMenuEvent(QContextMenuEvent *event)
     menu.exec(event->globalPos());
 }
 
-
 void MainWindow::hotKeys()
 {
     //генерация
     keyCtrlG = new QShortcut(this);
     keyCtrlG->setKey(Qt::CTRL + Qt::Key_G);
-    QObject::connect(keyCtrlG, SIGNAL(activated()), controller, SLOT(generate()));
+    connect(keyCtrlG, SIGNAL(activated()), controller, SLOT(generate()));
 
     //открыть для добавления директории
     keyCtrlO = new QShortcut(this);
     keyCtrlO->setKey(Qt::CTRL + Qt::Key_O);
-    QObject::connect(keyCtrlO, SIGNAL(activated()), this, SLOT(browse()));
+    connect(keyCtrlO, SIGNAL(activated()), this, SLOT(browse()));
 
     //открыть для добавления файла
     keyCtrlA = new QShortcut(this);
     keyCtrlA->setKey(Qt::CTRL + Qt::Key_A);
-    QObject::connect(keyCtrlA, SIGNAL(activated()), this, SLOT(add()));
+    connect(keyCtrlA, SIGNAL(activated()), this, SLOT(add()));
 
     //отмена
     keyCtrlZ = new QShortcut(this);
     keyCtrlZ->setKey(Qt::CTRL + Qt::Key_Z);
-    QObject::connect(keyCtrlZ, SIGNAL(activated()), this, SLOT(restorePrevious()));
+    connect(keyCtrlZ, SIGNAL(activated()), this, SLOT(restorePrevious()));
 }
-
 
 void MainWindow::dark()
 {
@@ -288,7 +255,6 @@ void MainWindow::dark()
     qApp->setPalette(p);
 }
 
-
 void MainWindow::white()
 {
     qApp->setPalette(qApp->style()->standardPalette());
@@ -296,15 +262,14 @@ void MainWindow::white()
     qApp->setStyleSheet("");
 }
 
-
 void MainWindow::checking(QList<Track> trackList)
 {
     for (int i = 0; i < trackList.size(); i++)
     {
         QTableWidget *tableWidget(table);
         QTableWidgetItem  *checkbox(tableWidget->item(i, 0));
-        if (checkbox)
-        {
+
+        if (checkbox) {
             Qt::CheckState state = checkbox->checkState();
             if (state == true)
                 controller->setIsTrackIncluded(i, false);
@@ -314,12 +279,10 @@ void MainWindow::checking(QList<Track> trackList)
     }
 }
 
-
 void MainWindow::cancelButton(bool active)
 {
     cancel->setEnabled(active);
 }
-
 
 void MainWindow::boxState(QTableWidgetItem* item)
 {
@@ -327,12 +290,10 @@ void MainWindow::boxState(QTableWidgetItem* item)
     controller->setIsTrackIncluded(item->row(), newValue);
 }
 
-
 void MainWindow::scanning()
 {
     statusBar()->showMessage("Подождите, идёт загрузка!");
 }
-
 
 void MainWindow::canGenerateChanged()
 {
