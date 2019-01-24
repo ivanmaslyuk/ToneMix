@@ -124,6 +124,14 @@ void MainWindow::createActions()
 
 void MainWindow::setFirstTrack()
 {
+    int rowOfSelectedItem = table->currentRow();
+
+    if (table->item(rowOfSelectedItem,  0)->checkState() == Qt::Checked) {
+        QMessageBox::warning(this, "Ошибка", "Невозможно установить этот трек первым, так как он исключен "
+                                             "из генерации");
+        return;
+    }
+
     QMessageBox::StandardButton choice = QMessageBox::question(this, "Выбор",
                                                             "Вы действительно хотите установить этот"
                                                             " трек первым?",
@@ -132,7 +140,6 @@ void MainWindow::setFirstTrack()
 
     if(choice == QMessageBox::Yes)
     {
-        int rowOfSelectedItem = table->currentRow();
         controller->setFirstTrack(rowOfSelectedItem);
 
     }
@@ -164,7 +171,10 @@ void MainWindow::getPlaylist(QList<Track> trackList)
     //добавление элементов в таблицу
     for(int i = 0; i < trackList.size(); i++) {
             QTableWidgetItem *checkBox = new QTableWidgetItem;
-            checkBox->setCheckState(Qt::CheckState(false));
+            if (trackList[i].excluded)
+                checkBox->setCheckState(Qt::Checked);//(Qt::CheckState(true));
+            else
+                checkBox->setCheckState(Qt::CheckState(false));
             table->setItem(i, 0, checkBox);
 
             if (trackList[i].title != "") {
@@ -286,8 +296,12 @@ void MainWindow::cancelButton(bool active)
 
 void MainWindow::boxState(QTableWidgetItem* item)
 {
-    bool newValue = item->checkState() == Qt::CheckState::Checked ? true : false;
-    controller->setIsTrackIncluded(item->row(), newValue);
+    if (table->item(item->row(), 0) == item) {
+//        qDebug() << item << "..." << table->item(item->row(), 0);
+        bool newValue = item->checkState() == Qt::CheckState::Checked ? false : true;// ? true : false;
+        controller->setIsTrackIncluded(item->row(), newValue);
+        qDebug() << item << ", " << table->item(item->row(), 0) << ", " << item->checkState() << ", " << newValue << ", " << item->row();
+    }
 }
 
 void MainWindow::scanning()
