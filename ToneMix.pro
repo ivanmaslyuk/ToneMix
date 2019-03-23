@@ -29,7 +29,8 @@ SOURCES += \
     harmonicplaylistgenerator.cpp \
     track.cpp \
     tagreader.cpp \
-    maincontroller.cpp
+    maincontroller.cpp \
+    tonenotationtranslator.cpp
 
 HEADERS += \
         mainwindow.h \
@@ -38,7 +39,8 @@ HEADERS += \
     tagreader.h \
     maincontroller.h \
     emptyplaylistexception.h \
-    nofocusproxystyle.h
+    nofocusproxystyle.h \
+    tonenotationtranslator.h
 
 FORMS += \
         mainwindow.ui
