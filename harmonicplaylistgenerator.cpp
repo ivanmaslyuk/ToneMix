@@ -54,7 +54,7 @@ Track* HarmonicPlaylistGenerator::takeRandomCompatible(QList<Track*> &tracklist,
     QList<Track*> compatible;
     for (int i = 0; i < tracklist.size(); i++)
         if (checkCompatible(track->num, track->key, tracklist[i]->num, tracklist[i]->key))
-            compatible.append(tracklist.at(i)); // А МОЖЕТ ВСЕ-ТАКИ НЕ ТЕЙК???
+            compatible.append(tracklist.at(i));
 
     // Если нет совместимых песен, возвращаем nullptr.
     if (compatible.size() == 0) return nullptr;
