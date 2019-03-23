@@ -152,7 +152,7 @@ QString ToneNotationTranslator::traktorToStandard(QString raw)
     if (raw == "10m") return "Cm";
     if (raw == "11m") return "Gm";
     if (raw == "12m") return "Dm";
-    qDebug() << "Не удалось перевести" << raw << "в систему нотации Traktor.";
+    qDebug() << "Не удалось перевести" << raw << "в стандартную систему нотации.";
     return "?";
 }
 
@@ -183,6 +183,6 @@ QString ToneNotationTranslator::standardToTraktor(QString raw)
     if (raw == "Cm") return "10m";
     if (raw == "Gm") return "11m";
     if (raw == "Dm") return "12m";
-    qDebug() << "Не удалось перевести" << raw << "в стандартную систему нотации.";
+    qDebug() << "Не удалось перевести" << raw << "в систему нотации Traktor.";
     return "?";
 }
