@@ -5,6 +5,7 @@
 #include <textidentificationframe.h>
 #include <QString>
 #include <QTextStream>
+#include "tonenotationtranslator.h"
 
 TagReader::TagReader(QStringList files)
 {
@@ -51,11 +52,24 @@ Track *TagReader::readFile(QString path)
 
 Track *TagReader::fillTrack(QString artist, QString title, QString key_str, int bpm, QString path)
 {
-    int num;
-    char key;
-    QTextStream stream(&key_str);
-    stream >> num >> key;
-    Track *track = new Track(artist, title, num, key, bpm, path);
+    ToneNotationTranslator translator;
+    Track *track = new Track(title, artist, key_str, bpm, path);
+
+    // Получаем тон в системе трактора, т.к. он нужен генератору.
+    QString traktor = translator.toTraktor(key_str);
+    if (traktor != "?")
+    {
+        int num;
+        char key;
+        QTextStream stream(&traktor);
+        stream >> num >> key;
+        track->num = num;
+        track->key = key;
+    }
+
+    track->toneRaw = key_str;
+    track->notation = translator.getToneNotation(key_str);
+    track->isAnalyzed = key_str != "";
     return track;
 }
 

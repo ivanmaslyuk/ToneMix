@@ -2,14 +2,13 @@
 #define TONENOTATIONTRANSLATOR_H
 
 #include <QString>
-#include "keytype.h"
 
 enum ToneNotation
 {
     Standard,
     Comelot,
     Traktor,
-    Unknown
+    UnknownToneNotation
 };
 
 class ToneNotationTranslator

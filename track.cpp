@@ -15,6 +15,15 @@ Track::Track(QString artist, QString title, int num, char key, int bpm, QString 
     this->path = path;
 }
 
+Track::Track(QString title, QString artist, QString toneRaw, int BPM, QString path)
+{
+    this->title = title;
+    this->artist = artist;
+    this->toneRaw = toneRaw;
+    this->bpm = BPM;
+    this->path = path;
+}
+
 QString Track::keyAsString()
 {
     return QString::number(this->num) + QString(this->key);

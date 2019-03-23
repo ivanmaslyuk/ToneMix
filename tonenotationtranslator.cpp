@@ -28,7 +28,7 @@ ToneNotation ToneNotationTranslator::getToneNotation(QString raw)
     }
     else
     {
-        return ToneNotation::Unknown;
+        return ToneNotation::UnknownToneNotation;
     }
 }
 
@@ -39,7 +39,7 @@ QString ToneNotationTranslator::toCamelot(QString raw)
         case ToneNotation::Comelot: return raw;
         case ToneNotation::Standard: return standardToCamelot(raw);
         case ToneNotation::Traktor: return standardToCamelot(traktorToStandard(raw));
-        case ToneNotation::Unknown: return "?";
+        case ToneNotation::UnknownToneNotation: return "?";
     }
 }
 
@@ -50,7 +50,7 @@ QString ToneNotationTranslator::toStandard(QString raw)
         case ToneNotation::Comelot: return camelotToStandard(raw);
         case ToneNotation::Standard: return raw;
         case ToneNotation::Traktor: return traktorToStandard(raw);
-        case ToneNotation::Unknown: return "?";
+        case ToneNotation::UnknownToneNotation: return "?";
     }
 }
 
@@ -61,7 +61,7 @@ QString ToneNotationTranslator::toTraktor(QString raw)
         case ToneNotation::Comelot: return standardToTraktor(camelotToStandard(raw));
         case ToneNotation::Standard: return standardToTraktor(raw);
         case ToneNotation::Traktor: return raw;
-        case ToneNotation::Unknown: return "?";
+        case ToneNotation::UnknownToneNotation: return "?";
     }
 }
 

@@ -6,6 +6,7 @@
 #include "nofocusproxystyle.h"
 #include "track.h"
 #include <QtWidgets>
+#include "tonenotationtranslator.h"
 //#include <QDir>
 //#include <QFileDialog>
 //#include <QVariant>
@@ -196,14 +197,17 @@ void MainWindow::getPlaylist(QList<Track> trackList)
                 table->setItem(i, 2, bmp);
             }
 
-            if(trackList[i].keyAsString() == "" || trackList[i].num == 0) {
+            /*if(trackList[i].keyAsString() == "" || trackList[i].num == 0) {
                 QTableWidgetItem *tone = new QTableWidgetItem(QString("?"));
                 table->setItem(i, 3, tone);
             }
             else {
                 QTableWidgetItem *tone = new QTableWidgetItem(trackList[i].keyAsString());
                 table->setItem(i, 3, tone);
-            }
+            }*/
+            ToneNotationTranslator translator;
+            QTableWidgetItem *tone = new QTableWidgetItem(translator.toCamelot(trackList[i].toneRaw));
+            table->setItem(i, 3, tone);
 
             for (int j = 0; j < column(); j++) {
                 if (trackList[i].repeatedInPlaylist)

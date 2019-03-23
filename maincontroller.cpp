@@ -21,7 +21,7 @@ void MainController::generate()
         // составляем список неисключенных из генерации треков для их передачи генератору
         QList<Track*> included;
         foreach (Track *track, allFiles) {
-            if (!track->excluded)
+            if (!track->excluded && track->isAnalyzed && track->notation != UnknownToneNotation)
                 included.append(track);
         }
 
