@@ -183,6 +183,6 @@ QString ToneNotationTranslator::standardToTraktor(QString raw)
     if (raw == "Cm") return "10m";
     if (raw == "Gm") return "11m";
     if (raw == "Dm") return "12m";
-    qDebug() << "Не удалось перевести" << raw << "в систему нотации Camelot.";
+    qDebug() << "Не удалось перевести" << raw << "в стандартную систему нотации.";
     return "?";
 }
