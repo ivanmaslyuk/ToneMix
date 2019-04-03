@@ -49,8 +49,6 @@ private slots:
     void browse();
     void add();
     void getPlaylist(QList<Track>);
-    void white();
-    void dark();
     void checking(QList<Track> trackList);
     void cancelButton(bool);
     void boxState(QTableWidgetItem*);

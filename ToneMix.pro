@@ -30,7 +30,8 @@ SOURCES += \
     track.cpp \
     tagreader.cpp \
     maincontroller.cpp \
-    tonenotationtranslator.cpp
+    tonenotationtranslator.cpp \
+    thememanager.cpp
 
 HEADERS += \
         mainwindow.h \
@@ -40,7 +41,8 @@ HEADERS += \
     maincontroller.h \
     emptyplaylistexception.h \
     nofocusproxystyle.h \
-    tonenotationtranslator.h
+    tonenotationtranslator.h \
+    thememanager.h
 
 FORMS += \
         mainwindow.ui

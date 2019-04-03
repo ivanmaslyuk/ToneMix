@@ -7,11 +7,7 @@
 #include "track.h"
 #include <QtWidgets>
 #include "tonenotationtranslator.h"
-//#include <QDir>
-//#include <QFileDialog>
-//#include <QVariant>
-//#include <QtCore>
-
+#include "thememanager.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -21,7 +17,6 @@ MainWindow::MainWindow(QWidget *parent) :
 
     settingTable();
     hotKeys();
-    createActions();
 
     QVBoxLayout *vLayout = new QVBoxLayout;
     QHBoxLayout *bottomLayout = new QHBoxLayout;
@@ -30,16 +25,6 @@ MainWindow::MainWindow(QWidget *parent) :
     QPushButton *Browse = new QPushButton("Обзор...");
     QPushButton *Add = new QPushButton("Добавить");
     QLabel *labelByTracks = new QLabel("Максимальное количество треков в плейлисте");
-
-//    colorWhite = new QRadioButton("Стандартная тема");
-//    colorDark = new QRadioButton("Тёмная тема");
-//    QVBoxLayout *radio = new QVBoxLayout;
-//    connect(colorDark, SIGNAL(clicked()), SLOT(dark()));
-//    connect(colorWhite, SIGNAL(clicked()), SLOT(white()));
-
-//    colorWhite->setChecked(true);
-//    radio->addWidget(colorWhite);
-//    radio->addWidget(colorDark);
 
     //коннекты
     connect(Browse, SIGNAL(clicked()), this, SLOT(browse()));
@@ -53,7 +38,6 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(controller, SIGNAL(scanningFiles()), this, SLOT(scanning()));
     connect(controller, SIGNAL(canGenerateChanged()), this, SLOT(canGenerateChanged()));
 
-
     //добавление всех виджетов в верхний слой
     topLayout->addWidget(Browse);
     topLayout->addWidget(Add);
@@ -66,10 +50,8 @@ MainWindow::MainWindow(QWidget *parent) :
     //объединяем слои и устанавливаем центральным виджетом
     vLayout->addLayout(topLayout);
     vLayout->addLayout(bottomLayout);
-    //vLayout->addLayout(radio);
     widget->setLayout(topLayout);
     widget->setLayout(vLayout);
-    //widget->setLayout(radio);
     setCentralWidget(widget);
 
     //настройка спинбокса
@@ -173,7 +155,7 @@ void MainWindow::getPlaylist(QList<Track> trackList)
     for(int i = 0; i < trackList.size(); i++) {
             QTableWidgetItem *checkBox = new QTableWidgetItem;
             if (trackList[i].excluded)
-                checkBox->setCheckState(Qt::Checked);//(Qt::CheckState(true));
+                checkBox->setCheckState(Qt::Checked);
             else
                 checkBox->setCheckState(Qt::CheckState(false));
             table->setItem(i, 0, checkBox);
@@ -197,14 +179,6 @@ void MainWindow::getPlaylist(QList<Track> trackList)
                 table->setItem(i, 2, bmp);
             }
 
-            /*if(trackList[i].keyAsString() == "" || trackList[i].num == 0) {
-                QTableWidgetItem *tone = new QTableWidgetItem(QString("?"));
-                table->setItem(i, 3, tone);
-            }
-            else {
-                QTableWidgetItem *tone = new QTableWidgetItem(trackList[i].keyAsString());
-                table->setItem(i, 3, tone);
-            }*/
             ToneNotationTranslator translator;
             QTableWidgetItem *tone = new QTableWidgetItem(translator.toCamelot(trackList[i].toneRaw));
             table->setItem(i, 3, tone);
@@ -247,35 +221,6 @@ void MainWindow::hotKeys()
     connect(keyCtrlZ, SIGNAL(activated()), this, SLOT(restorePrevious()));
 }
 
-void MainWindow::dark()
-{
-    qApp->setStyle(QStyleFactory::create("Fusion"));
-    QPalette p = qApp->palette();
-    p.setColor(QPalette::Window, QColor(53, 53, 53));
-    p.setColor(QPalette::WindowText, QColor(255, 255, 255));
-    p.setColor(QPalette::Base, QColor(15, 15, 15));
-    p.setColor(QPalette::AlternateBase, QColor(53, 53, 53));
-    p.setColor(QPalette::ToolTipBase , QColor(255, 255, 255));
-    p.setColor(QPalette::ToolTipText, QColor(255, 255, 255));
-    p.setColor(QPalette::Button, QColor(53, 53, 53));
-    p.setColor(QPalette::ButtonText, QColor(255, 255, 255));
-    p.setColor(QPalette::BrightText, Qt::red);
-    p.setColor(QPalette::Highlight, QColor(47, 79, 79).lighter());
-    p.setColor(QPalette::HighlightedText, Qt::black);
-    p.setColor(QPalette::Text, Qt::white);
-    p.setColor(QPalette::Disabled, QPalette::Text, Qt::darkGray);
-    p.setColor(QPalette::Disabled, QPalette::ButtonText, Qt::darkGray);
-
-    qApp->setPalette(p);
-}
-
-void MainWindow::white()
-{
-    qApp->setPalette(qApp->style()->standardPalette());
-    qApp->setStyle(QStyleFactory::create("WindowsVista"));
-    qApp->setStyleSheet("");
-}
-
 void MainWindow::checking(QList<Track> trackList)
 {
     for (int i = 0; i < trackList.size(); i++)
@@ -301,8 +246,7 @@ void MainWindow::cancelButton(bool active)
 void MainWindow::boxState(QTableWidgetItem* item)
 {
     if (table->item(item->row(), 0) == item) {
-//        qDebug() << item << "..." << table->item(item->row(), 0);
-        bool newValue = item->checkState() == Qt::CheckState::Checked ? false : true;// ? true : false;
+        bool newValue = item->checkState() == Qt::CheckState::Checked ? false : true;
         controller->setIsTrackIncluded(item->row(), newValue);
         qDebug() << item << ", " << table->item(item->row(), 0) << ", " << item->checkState() << ", " << newValue << ", " << item->row();
     }
