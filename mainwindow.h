@@ -6,6 +6,12 @@
 #include <QtWidgets>
 #include "maincontroller.h"
 #include "track.h"
+#include "mytableview.h"
+
+
+#define ORGANIZATION_NAME "WorkDj"
+#define ORGANIZATION_DOMAIN "www.workdj.ru"
+#define APPLICATION_NAME "ToneMix"
 
 namespace Ui {
 class MainWindow;
@@ -16,13 +22,14 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    explicit MainWindow(QWidget *parent = 0);
+    explicit MainWindow(QWidget *parent = nullptr);
     QTableWidget *table = new QTableWidget;
     QWidget *widget = new QWidget;
     MainController *controller = new MainController;
     QSpinBox *countOfTrackInPlaylist = new QSpinBox();
     QPushButton *cancel = new QPushButton("Назад");
     QPushButton *generate = new QPushButton("Сгенерировать");
+    MyTableView *tableView = new MyTableView(0, 4);
     ~MainWindow();
 
 private:
@@ -32,7 +39,6 @@ private:
     QAction *addAct;
 
     int column();
-    void settingTable();
     void createActions();
     void hotKeys();
 
@@ -51,12 +57,10 @@ private slots:
     void getPlaylist(QList<Track>);
     void checking(QList<Track> trackList);
     void cancelButton(bool);
-    void boxState(QTableWidgetItem*);
+    void boxState(QStandardItem *);
     void scanning();
     void canGenerateChanged();
-
-protected:
-    void contextMenuEvent(QContextMenuEvent *event);
+    void slotCustomMenuRequested(QPoint pos);
 };
 
 #endif // MAINWINDOW_H

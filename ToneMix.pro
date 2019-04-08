@@ -31,7 +31,8 @@ SOURCES += \
     tagreader.cpp \
     maincontroller.cpp \
     tonenotationtranslator.cpp \
-    thememanager.cpp
+    thememanager.cpp \
+    mytableview.cpp
 
 HEADERS += \
         mainwindow.h \
@@ -42,7 +43,8 @@ HEADERS += \
     emptyplaylistexception.h \
     nofocusproxystyle.h \
     tonenotationtranslator.h \
-    thememanager.h
+    thememanager.h \
+    mytableview.h
 
 FORMS += \
         mainwindow.ui

@@ -15,7 +15,6 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    settingTable();
     hotKeys();
 
     QVBoxLayout *vLayout = new QVBoxLayout;
@@ -45,11 +44,14 @@ MainWindow::MainWindow(QWidget *parent) :
     topLayout->addWidget(generate);
     topLayout->addWidget(labelByTracks);
     topLayout->addWidget(countOfTrackInPlaylist);
-    bottomLayout->addWidget(table);
+
+    QHBoxLayout *bottom = new QHBoxLayout;
+    bottom->addWidget(tableView);
 
     //объединяем слои и устанавливаем центральным виджетом
     vLayout->addLayout(topLayout);
     vLayout->addLayout(bottomLayout);
+    vLayout->addLayout(bottom);
     widget->setLayout(topLayout);
     widget->setLayout(vLayout);
     setCentralWidget(widget);
@@ -66,31 +68,14 @@ MainWindow::MainWindow(QWidget *parent) :
     table->setStyle(new NoFocusProxyStyle());
 
     statusBar()->showMessage("Пусто. Выберите треки, нажав \"Обзор\" или \"Добавить\".");
+
+    tableView->setContextMenuPolicy(Qt::CustomContextMenu);
+    connect(tableView, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(slotCustomMenuRequested(QPoint)));
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
-}
-
-void MainWindow::settingTable()
-{
-    //устанавливаем размер нашей таблицы
-    table->setRowCount(0);
-    table->setColumnCount(column());
-
-    //устанавливаем названия колонок
-    table->setHorizontalHeaderLabels(QStringList() << "" << "Трек" << "BPM" << "Тон");
-
-    //настраиваем столбцы
-    table->verticalHeader()->setVisible(false); //удаляем номера строк
-    table->verticalHeader()->setDefaultAlignment(Qt::AlignVCenter);
-    table->horizontalHeader()->setSectionResizeMode(1, QHeaderView::Stretch);
-    table->resizeColumnsToContents();
-    table->resizeRowsToContents();
-    table->setEditTriggers(QAbstractItemView::NoEditTriggers);
-    table->setShowGrid(false); //отрисовка таблицы
-    table->setSelectionBehavior(QAbstractItemView::SelectRows); //выбираем только строки
 }
 
 int MainWindow::column()
@@ -99,17 +84,12 @@ int MainWindow::column()
     return m;
 }
 
-void MainWindow::createActions()
-{
-    addAct = new QAction(tr("Назначить первым"), this);
-    connect(addAct, SIGNAL(triggered()), this, SLOT(setFirstTrack()));
-}
-
 void MainWindow::setFirstTrack()
 {
-    int rowOfSelectedItem = table->currentRow();
+    int rowOfSelectedItemTableView = tableView->selectionModel()->currentIndex().row();
+    qDebug() << rowOfSelectedItemTableView;
 
-    if (table->item(rowOfSelectedItem,  0)->checkState() == Qt::Checked) {
+    if (tableView->tableViewModel->item(rowOfSelectedItemTableView,  0)->checkState() == Qt::Checked) {
         QMessageBox::warning(this, "Ошибка", "Невозможно установить этот трек первым, так как он исключен "
                                              "из генерации");
         return;
@@ -123,7 +103,7 @@ void MainWindow::setFirstTrack()
 
     if(choice == QMessageBox::Yes)
     {
-        controller->setFirstTrack(rowOfSelectedItem);
+        controller->setFirstTrack(rowOfSelectedItemTableView);
 
     }
 }
@@ -147,55 +127,57 @@ void MainWindow::add()
 
 void MainWindow::getPlaylist(QList<Track> trackList)
 {
-    table->setRowCount(trackList.size());
-
+    tableView->tableViewModel->setRowCount(trackList.size());
     statusBar()->showMessage("Количество песен в плейлисте: " + QString::number(trackList.size()));
 
     //добавление элементов в таблицу
     for(int i = 0; i < trackList.size(); i++) {
-            QTableWidgetItem *checkBox = new QTableWidgetItem;
-            if (trackList[i].excluded)
-                checkBox->setCheckState(Qt::Checked);
-            else
-                checkBox->setCheckState(Qt::CheckState(false));
-            table->setItem(i, 0, checkBox);
+//            tableView->setRowHeight(i, 15); // херово робит
+
+            QStandardItem *checkBoxTableView = new QStandardItem;
+            if (trackList[i].excluded) {
+                checkBoxTableView->setCheckable(true);
+                checkBoxTableView->setCheckState(Qt::Checked);
+            }
+            else {
+                checkBoxTableView->setCheckable(true);
+                checkBoxTableView->setCheckState(Qt::CheckState(false));
+            }
+            tableView->tableViewModel->setItem(i, 0, checkBoxTableView);
 
             if (trackList[i].title != "") {
-                QTableWidgetItem *track = new QTableWidgetItem(trackList[i].title);
-                table->setItem(i, 1, track);
+                QStandardItem *trackTableView = new QStandardItem(trackList[i].title);
+                tableView->tableViewModel->setItem(i, 1, trackTableView);
             }
             else {
                 trackList[i].path = trackList[i].path.split("/").last();
-                QTableWidgetItem *track = new QTableWidgetItem(trackList[i].path);
-                table->setItem(i, 1, track);
+                QStandardItem *trackTableView = new QStandardItem(trackList[i].path);
+                tableView->tableViewModel->setItem(i, 1, trackTableView);
             }
 
             if(trackList[i].bpm == 0) {
-                QTableWidgetItem *bmp = new QTableWidgetItem(QString("?"));
-                table->setItem(i, 2, bmp);
+                QStandardItem *bmpTableView = new QStandardItem(QString("?"));
+                tableView->tableViewModel->setItem(i, 2, bmpTableView);
             }
             else {
-                QTableWidgetItem *bmp = new QTableWidgetItem(trackList[i].bpmAsString());
-                table->setItem(i, 2, bmp);
+                QStandardItem *bmpTableView = new QStandardItem(trackList[i].bpmAsString());
+                tableView->tableViewModel->setItem(i, 2, bmpTableView);
             }
 
             ToneNotationTranslator translator;
-            QTableWidgetItem *tone = new QTableWidgetItem(translator.toCamelot(trackList[i].toneRaw));
-            table->setItem(i, 3, tone);
 
-            for (int j = 0; j < column(); j++) {
-                if (trackList[i].repeatedInPlaylist)
-                    table->item(i, j)->setBackground(QColor("#ffa7a7"));
+            QStandardItem *toneTableView = new QStandardItem(translator.toCamelot(trackList[i].toneRaw));
+            tableView->tableViewModel->setItem(i, 3, toneTableView);
+
+            if (trackList[i].repeatedInPlaylist)
+                tableView->fillLine(i, "#ffa7a7");
             }
-    }
-    connect(table, SIGNAL(itemClicked(QTableWidgetItem*)), this, SLOT(boxState(QTableWidgetItem*)));
-}
 
-void MainWindow::contextMenuEvent(QContextMenuEvent *event)
-{
-    QMenu menu(this);
-    menu.addAction(addAct);
-    menu.exec(event->globalPos());
+    tableView->setModel(tableView->tableViewModel);
+    tableView->resizeColumnsToContents();
+    tableView->horizontalHeader()->setSectionResizeMode(1, QHeaderView::Stretch);
+
+    connect(tableView->tableViewModel, SIGNAL(itemChanged(QStandardItem *)), this, SLOT(boxState(QStandardItem *)));
 }
 
 void MainWindow::hotKeys()
@@ -225,15 +207,11 @@ void MainWindow::checking(QList<Track> trackList)
 {
     for (int i = 0; i < trackList.size(); i++)
     {
-        QTableWidget *tableWidget(table);
-        QTableWidgetItem  *checkbox(tableWidget->item(i, 0));
+        QStandardItem  *checkbox(tableView->tableViewModel->item(i, 0));
 
         if (checkbox) {
             Qt::CheckState state = checkbox->checkState();
-            if (state == true)
-                controller->setIsTrackIncluded(i, false);
-            else
-                controller->setIsTrackIncluded(i, true);
+            controller->setIsTrackIncluded(i, !state);
         }
     }
 }
@@ -243,12 +221,12 @@ void MainWindow::cancelButton(bool active)
     cancel->setEnabled(active);
 }
 
-void MainWindow::boxState(QTableWidgetItem* item)
+void MainWindow::boxState(QStandardItem *item)
 {
-    if (table->item(item->row(), 0) == item) {
+    if (tableView->tableViewModel->item(item->row(), 0) == item) {
         bool newValue = item->checkState() == Qt::CheckState::Checked ? false : true;
         controller->setIsTrackIncluded(item->row(), newValue);
-        qDebug() << item << ", " << table->item(item->row(), 0) << ", " << item->checkState() << ", " << newValue << ", " << item->row();
+        qDebug() << item << ", " << tableView->tableViewModel->item(item->row(), 0) << ", " << item->checkState() << ", " << newValue << ", " << item->row();
     }
 }
 
@@ -260,4 +238,13 @@ void MainWindow::scanning()
 void MainWindow::canGenerateChanged()
 {
     generate->setEnabled(controller->canGenerate());
+}
+
+void MainWindow::slotCustomMenuRequested(QPoint pos)
+{
+    QMenu *menu = new QMenu(this);
+    QAction *setFirstTrack = new QAction(tr("Назначить первым"), this);
+    connect(setFirstTrack, SIGNAL(triggered()), this, SLOT(setFirstTrack()));
+    menu->addAction(setFirstTrack);
+    menu->popup(tableView->viewport()->mapToGlobal(pos));
 }

@@ -4,9 +4,10 @@
 #include <QProxyStyle>
 
 class NoFocusProxyStyle : public QProxyStyle {
+    Q_OBJECT
 public:
 
-    NoFocusProxyStyle(QStyle *baseStyle = 0) : QProxyStyle(baseStyle) {}
+    NoFocusProxyStyle(QStyle *baseStyle = nullptr) : QProxyStyle(baseStyle) {}
 
     void drawPrimitive(PrimitiveElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget) const {
         if(element == QStyle::PE_FrameFocusRect) {
