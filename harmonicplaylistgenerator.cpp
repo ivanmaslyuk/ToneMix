@@ -3,10 +3,8 @@
 #include <QRandomGenerator>
 #include <QTime>
 
-//https://github.com/NRec22/harmonic-mixing-generator/blob/master/generator.js
 HarmonicPlaylistGenerator::HarmonicPlaylistGenerator() {}
 
-// check matching
 bool HarmonicPlaylistGenerator::matchKey(char key1, char key2)
 {
     return key1 == key2;
@@ -29,7 +27,6 @@ bool HarmonicPlaylistGenerator::adjacentNum(int num1, int num2)
         return false;
 }
 
-// Получая две песни, определяет, сочетаются ли они гармонически.
 bool HarmonicPlaylistGenerator::checkCompatible(int num1, char key1, int num2, char key2)
 {
     // Если число одно и то же (4А <-> 4A, 4А <-> 4B)
@@ -45,9 +42,6 @@ bool HarmonicPlaylistGenerator::checkCompatible(int num1, char key1, int num2, c
     }
 }
 
-/**
- * Вынимает из плейлиста случайную песню, совместимую с данной.
- */
 Track* HarmonicPlaylistGenerator::takeRandomCompatible(QList<Track*> &tracklist, Track *track)
 {
     // Получаем полный список совместимых песен.
@@ -71,10 +65,6 @@ Track* HarmonicPlaylistGenerator::takeRandomCompatible(QList<Track*> &tracklist,
     return compatible[index];
 }
 
-
-/**
- * Из полученного списка треков составляет гармонический плейлист.
- */
 QList<Track*> &HarmonicPlaylistGenerator::harmonicSort(QList<Track*> playlist, bool random)
 {
     QList<Track*> *unsort = new QList<Track*>(playlist);

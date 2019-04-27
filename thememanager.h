@@ -3,12 +3,16 @@
 
 #include <QtWidgets>
 
+// Управляет оформлением программы.
 class ThemeManager
 {
 public:
     ThemeManager();
 
+    // Применяет тёмную тему оформаления.
     void dark();
+
+    // Применяет светлую тему оформаления.
     void standard();
 };
 

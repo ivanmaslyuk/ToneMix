@@ -3,8 +3,6 @@
 #include "tagreader.h"
 #include "emptyplaylistexception.h"
 #include <QStringList>
-//Установка первого трека
-//Отображение списка треков сразу при добавлении
 
 MainController::MainController(QObject *parent) : QObject(parent)
 {
@@ -74,13 +72,13 @@ void MainController::setWorkingDirectory(QString path)
 
 void MainController::addSingleTrack(QString path)
 {
+    // Считываем тональность и добавляем в список всех файлов.
     TagReader tagReader = TagReader(QStringList() << path);
     QList<Track*> file = tagReader.read();
     allFiles.append(file);
 
-    // тут возможено косяки
+    // Сразу же добавляем в текущий плейлист и отправляем его представлению.
     currentPlaylist.append(file[0]);
-
     sendCurrentPlaylist();
 
     if (allFiles.size() > 0)
@@ -116,12 +114,15 @@ void MainController::setFirstTrack(int index)
 }
 
 void MainController::checkRepeated() {
+    // Сначала сбрасываем флаг у всех треков.
     foreach (Track *t, allFiles) {
         t->repeatedInPlaylist = false;
     }
 
+    // Копируем текущий плелист.
     QList<Track*> list(currentPlaylist);
 
+    // Проверяем на повторения.
     foreach(Track *track, currentPlaylist) {
         list.removeFirst();
         foreach(Track* tr, list) {
@@ -138,7 +139,8 @@ void MainController::checkRepeated() {
 
 void MainController::sendCurrentPlaylist()
 {
-    checkRepeated(); // проверяем какие треки повторяются перед передачей
+    // проверяем какие треки повторяются перед передачей
+    checkRepeated();
 
     QList<Track> playlist;
     foreach(Track *t, currentPlaylist) {

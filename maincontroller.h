@@ -43,14 +43,19 @@ public slots:
     void setPlaylistSize(int size);
 
 private:
+    // текущий плейлист
     QList<Track*> currentPlaylist;
+    // хранит историю генераций
     QList<QList<Track*>> generationHistory;
+    // хранит все треки, добавленные в программу
     QList<Track*> allFiles;
+    // Выбранная папка.
     QDir workingDirectory;
+    // Максимальный размер плейлиста.
     int playlistSize = 200;
-
+    // Проверяет наличие повторяющихся треков в текущем плейлисте.
     void checkRepeated();
-    //QList<Track> checkRepeated(QList<Track> &p);
+    // отправляет текущий плейлист через сигнал generated.
     void sendCurrentPlaylist();
 };
 

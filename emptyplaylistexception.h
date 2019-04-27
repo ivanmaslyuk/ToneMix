@@ -15,8 +15,6 @@ public:
         messageBox.setIcon(QMessageBox::Warning);
         messageBox.exec();
         return;
-        /*qDebug() << "Невозможно сгенерировать плейлист, если не было выбрано исходных файлов.";
-        throw *this;*/
     }
     EmptyPlaylistException *clone() const override { return new EmptyPlaylistException(*this); }
 };

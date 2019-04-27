@@ -12,7 +12,7 @@ public:
     Track();
     QString keyAsString(); // тональность
     QString bpmAsString(); // ударов в минуту
-    QString description();
+    QString description(); // описание
 
     QString title; // наазвание
     QString artist; // исполнитель

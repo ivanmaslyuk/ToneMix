@@ -10,6 +10,7 @@ public:
     NoFocusProxyStyle(QStyle *baseStyle = nullptr) : QProxyStyle(baseStyle) {}
 
     void drawPrimitive(PrimitiveElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget) const {
+        // Отменяем рисовку стандартных рамок Windows вокруг выбранных элементов.
         if(element == QStyle::PE_FrameFocusRect) {
             return;
         }
