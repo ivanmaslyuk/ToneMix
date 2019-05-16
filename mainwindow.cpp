@@ -226,7 +226,7 @@ void MainWindow::boxState(QStandardItem *item)
     if (tableView->tableViewModel->item(item->row(), 0) == item) {
         bool newValue = item->checkState() == Qt::CheckState::Checked ? false : true;
         controller->setIsTrackIncluded(item->row(), newValue);
-        qDebug() << item << ", " << tableView->tableViewModel->item(item->row(), 0) << ", " << item->checkState() << ", " << newValue << ", " << item->row();
+        //qDebug() << item << ", " << tableView->tableViewModel->item(item->row(), 0) << ", " << item->checkState() << ", " << newValue << ", " << item->row();
     }
 }
 
