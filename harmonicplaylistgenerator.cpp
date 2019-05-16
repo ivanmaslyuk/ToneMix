@@ -65,39 +65,17 @@ Track* HarmonicPlaylistGenerator::takeRandomCompatible(QList<Track*> &tracklist,
     return compatible[index];
 }
 
-QList<Track*> &HarmonicPlaylistGenerator::harmonicSort(QList<Track*> playlist, bool random)
+QList<Track*> &HarmonicPlaylistGenerator::harmonicSort(QList<Track*> playlist)
 {
     QList<Track*> *unsort = new QList<Track*>(playlist);
 
     QList<Track*> *sortedPlaylist = new QList<Track*>();
     sortedPlaylist->append(unsort->takeFirst());
 
-    if (random)
-        return harmonicSortRandomHelper(*sortedPlaylist, *unsort);
-    else
-        return harmonicSortHelper(*sortedPlaylist, *unsort);
+    return harmonicSortHelper(*sortedPlaylist, *unsort);
 }
 
 QList<Track*> &HarmonicPlaylistGenerator::harmonicSortHelper(QList<Track*> &sortlist, QList<Track*> &unsortlist)
-{
-    // можно написать функцию которая будет находить наиболее подходящую песню для данной песни, чтобы было меньше отсеенных треков
-    // одним из критериев оценивания будет то, сколько песен после себя она может поставить
-    // главный критерий -- если есть песня с такой же тональностью, ставим ее.
-    for(int i = 0; i < unsortlist.size(); i++) {
-        if (checkCompatible(sortlist[sortlist.size() - 1]->num, sortlist[sortlist.size() - 1]->key, unsortlist[i]->num, unsortlist[i]->key)) {
-            sortlist.append(unsortlist.takeAt(i));
-            harmonicSortHelper(sortlist, unsortlist);
-        }
-        else if (i == unsortlist.size() - 1) {
-            //sortlist.append(unsortlist.takeFirst()); // добавляет не поддающиеся сортировке песни в конец списка
-            unsortlist.removeFirst(); // удаляет не поддающиеся сортировке песни из плейлиста
-            harmonicSortHelper(sortlist, unsortlist);
-        }
-    }
-    return sortlist;
-}
-
-QList<Track*> &HarmonicPlaylistGenerator::harmonicSortRandomHelper(QList<Track*> &sortlist, QList<Track*> &unsortlist)
 {
     if (unsortlist.size() != 0) {
         // Берем последний трек в сортированном списке, чтобы подобрать к нему совместимый.
@@ -109,7 +87,7 @@ QList<Track*> &HarmonicPlaylistGenerator::harmonicSortRandomHelper(QList<Track*>
         // Если удалось найти совместимую композицию.
         if (randomCompatible != nullptr) {
             sortlist.append(randomCompatible);
-            harmonicSortRandomHelper(sortlist, unsortlist);
+            harmonicSortHelper(sortlist, unsortlist);
         }
         // Если не удалось найти совместимую композицию.
         else {

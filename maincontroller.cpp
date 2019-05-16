@@ -23,7 +23,7 @@ void MainController::generate()
                 included.append(track);
         }
 
-        currentPlaylist = HarmonicPlaylistGenerator::harmonicSort(included, true);
+        currentPlaylist = HarmonicPlaylistGenerator::harmonicSort(included);
 
         // обрезаем плейлист чтобы его размер не привышал playlistSize
         while (currentPlaylist.size() > playlistSize)

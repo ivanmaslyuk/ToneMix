@@ -10,7 +10,7 @@ public:
     // Из принятого списка треков генерирует гармонически сочетаемый плейлист
     // и возвращает его. Если второй аргумент равен true, то будут генерироваться
     // уникальные плейлисты.
-    static QList<Track*> &harmonicSort(QList<Track*>, bool random = false);
+    static QList<Track*> &harmonicSort(QList<Track*>);
 
 private:
     // Не разрешается создавать экземпляры этого класса.
@@ -28,12 +28,9 @@ private:
     // Проверяет, совместимы ли треки.
     static bool checkCompatible(int, char, int, char);
 
-    // Рекурсивная функция, сортирующая треки по тональности.
-    static QList<Track*> &harmonicSortHelper(QList<Track*> &, QList<Track*> &);
-
     // Рекурсивная функция, создающая уникальные плейлисты,
     // где все треки совместимы.
-    static QList<Track*> &harmonicSortRandomHelper(QList<Track*> &, QList<Track*> &);
+    static QList<Track*> &harmonicSortHelper(QList<Track*> &, QList<Track*> &);
 
     // Изымает из переданного списка треков случайный трек, совместимый с переданным треком.
     static Track *takeRandomCompatible(QList<Track*> &playlist, Track *track);
