@@ -54,7 +54,7 @@ Track* HarmonicPlaylistGenerator::takeRandomCompatible(QList<Track*> &tracklist,
     if (compatible.size() == 0) return nullptr;
 
     // Получаем случайный индекс.
-    QRandomGenerator generator(QTime::currentTime().msec());
+    QRandomGenerator generator(static_cast<unsigned int>(QTime::currentTime().msec()));
     int index = generator.bounded(0, compatible.size() - 1);
 
     // Удаляем из списка tracklist выбранный трек.
